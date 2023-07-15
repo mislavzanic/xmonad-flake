@@ -1,0 +1,59 @@
+cabal-version:      2.4
+name:               mzanic-xmonad
+version:            0.1.0.0
+
+library
+  hs-source-dirs:  src
+  exposed-modules: Xmonad
+                   Config.Alias
+                   Config.Bar
+                   Config.Hosts
+                   Config.Keys
+                   Config.Prompts
+                   Hooks.LayoutHook
+                   Hooks.ManageHook
+                   Hooks.StartupHook
+                   Hooks.RescreenHook
+                   Hooks.HandleEventHook
+                   Hosts.Milivoj
+                   Hosts.Ilija
+                   Hosts.Helpers
+                   Theme.Xprop
+                   Workspaces.Topics
+                   Workspaces.Profile
+                   Workspaces.Scratchpad
+                   XMonad.Actions.Profiles
+                   XMonad.Actions.PerProfileWindows
+
+  build-depends:     X11
+                   , base
+                   , split
+                   , deepseq
+                   , regex-compat
+                   , hostname
+                   , containers
+                   , directory
+                   , utf8-string
+                   , xmonad
+                   , xmonad-contrib
+
+
+  default-language:    Haskell2010
+  default-extensions:  LambdaCase
+  ghc-options:         -Wall
+
+
+executable mzanic-xmonad
+    main-is: Main.hs
+    build-depends:     X11
+                     , base
+                     , hostname
+                     , containers
+                     , utf8-string
+                     , xmonad
+                     , mzanic-xmonad
+                     , xmonad-contrib
+
+  default-language:    Haskell2010
+  default-extensions:  LambdaCase
+  ghc-options:         -Wall

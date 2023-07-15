@@ -1,0 +1,12 @@
+[submodule "xmonad"]
+	path = xmonad
+	url = https://github.com/xmonad/xmonad
+[submodule "xmonad-contrib"]
+	path = xmonad-contrib
+	url = https://github.com/xmonad/xmonad-contrib
+[submodule "X11"]
+	path = X11
+	url = https://github.com/xmonad/X11
+[submodule "X11-xft"]
+	path = X11-xft
+	url = https://github.com/xmonad/X11-xft

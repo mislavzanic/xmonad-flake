@@ -1,0 +1,52 @@
+cradle:
+  cabal:
+    - path: "Main.hs"
+      component: "mzanic-xmonad:exe:mzanic-xmonad"
+
+    - path: "X11/./"
+      component: "lib:X11"
+
+    - path: "xmonad/src"
+      component: "lib:xmonad"
+
+    - path: "src/Xmonad.hs"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/Config"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/Hooks"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/Hosts"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/Theme"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/Workspaces"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/XMonad"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/XMonad/Actions"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/XMonad/Util"
+      component: "lib:mzanic-xmonad"
+
+    - path: "xmonad/./Main.hs"
+      component: "xmonad:exe:xmonad"
+
+    - path: "xmonad/tests"
+      component: "xmonad:test:properties"
+
+    - path: "xmonad-contrib/./"
+      component: "lib:xmonad-contrib"
+
+    - path: "xmonad-contrib/tests"
+      component: "xmonad-contrib:test:tests"
+
+    - path: "xmonad-contrib/."
+      component: "xmonad-contrib:test:tests"
