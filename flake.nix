@@ -35,6 +35,7 @@
         config.allowBroken = true;
       };
     in rec {
+      # todo: fix this hot mess
       devShell = pkgs.haskellPackages.shellFor {
         packages = p: [p.mzanic-xmonad p.xmonad-contrib];
         buildInputs = with pkgs.haskellPackages; [
@@ -46,8 +47,11 @@
           implicit-hie
         ];
       };
+
+      wm = import ./nix/wm-service.nix;
+
       defaultPackage = pkgs.haskellPackages.mzanic-xmonad;
-      overlays.default = overlay;
+
     }) // {
       inherit overlays overlay;
     };
