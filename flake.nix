@@ -1,6 +1,7 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
+    git-ignore-nix.url = "github:hercules-ci/gitignore.nix/master";
     xmonad = {
       url = "github:xmonad/xmonad";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -12,6 +13,7 @@
     xmobar = {
       url = "git+https://codeberg.org/xmobar/xmobar";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.git-ignore-nix.follows = "git-ignore-nix";
     };
   };
   outputs = {
