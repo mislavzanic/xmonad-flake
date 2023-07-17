@@ -1,0 +1,35 @@
+cabal-version:  >= 1.10
+name:           mzanic-xmobar
+version:        0.1
+description:    xmobar configs
+license:        GPL-3
+build-type:     Simple
+
+library
+  hs-source-dirs:  src
+  exposed-modules: Bar
+                 , Config.Helpers
+                 , Config.Widgets
+                 , Config.BarConfig
+                 , Hosts.Milivoj
+                 , Hosts.Ilija
+
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -O2 -rtsopts -threaded -with-rtsopts=-N
+  build-depends: X11
+               , X11-xft
+               , base
+               , xmobar
+               , hostname
+  default-language: Haskell2010
+
+executable bar
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -O2 -rtsopts -threaded -with-rtsopts=-N
+  -- ghc-options: -rtsopts -with-rtsopts=-V0 -threaded
+  build-depends: X11
+               , X11-xft
+               , base
+               , xmobar
+               , hostname
+               , mzanic-xmobar
+  default-language: Haskell2010

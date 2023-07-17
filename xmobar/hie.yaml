@@ -1,0 +1,22 @@
+cradle:
+  cabal:
+    - path: "Main.hs"
+      component: "mzanic-xmobar:exe:bar"
+
+    - path: "src/Bar.hs"
+      component: "lib:mzanic-xmobar"
+
+    - path: "src/Hosts"
+      component: "lib:mzanic-xmonad"
+
+    - path: "src/Config"
+      component: "lib:mzanic-xmonad"
+
+    - path: "xmobar/./"
+      component: "lib:xmobar"
+
+    - path: "xmobar/src"
+      component: "lib:xmobar"
+
+    - path: "xmobar/app/Main.hs"
+      component: "xmobar:exe:xmobar"

@@ -9,6 +9,10 @@
       url = "github:xmonad/xmonad-contrib";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    xmobar = {
+      url = "git+https://codeberg.org/xmobar/xmobar";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = {
     self,
@@ -16,18 +20,21 @@
     nixpkgs,
     xmonad,
     xmonad-contrib,
+    xmobar,
+    ...
   }: let
     overlay = newPkgs: oldPkgs: rec {
       haskellPackages = oldPkgs.haskellPackages.override (old: {
         overrides =
         oldPkgs.lib.composeExtensions (old.overrides or (_: _: {}))
         (self: super: rec {
-          mzanic-xmonad = self.callCabal2nix "mzanic-xmonad" ./. {};
+          mzanic-xmonad = self.callCabal2nix "mzanic-xmonad" ./xmonad {};
+          mzanic-xmobar = self.callCabal2nix "mzanic-xmobar" ./xmobar {};
         });
       });
     };
 
-    overlays = [xmonad.overlay xmonad-contrib.overlay overlay];
+    overlays = [xmonad.overlay xmonad-contrib.overlay xmobar.overlay overlay];
   in
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
@@ -35,23 +42,9 @@
         config.allowBroken = true;
       };
     in rec {
-      # todo: fix this hot mess
-      devShell = pkgs.haskellPackages.shellFor {
-        packages = p: [p.mzanic-xmonad p.xmonad-contrib];
-        buildInputs = with pkgs.haskellPackages; [
-          cabal-install
-          haskell-language-server
-          hlint
-          ghcid
-          ormolu
-          implicit-hie
-        ];
-      };
-
+      devShell = import ./shell.nix;
       wm = import ./nix/wm-service.nix;
-
       defaultPackage = pkgs.haskellPackages.mzanic-xmonad;
-
     }) // {
       inherit overlays overlay;
     };

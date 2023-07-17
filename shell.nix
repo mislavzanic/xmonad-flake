@@ -8,6 +8,8 @@ let
     ormolu
     implicit-hie
     X11
+    pango
+    iwlib
   ];
 
   xorgPkgs = with pkgs.xorg; [
@@ -28,5 +30,6 @@ in
       pkg-config
       autoconf
       expat
+      pango
     ]);
   }
