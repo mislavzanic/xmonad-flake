@@ -33,7 +33,7 @@ myStartupHook = do
   spawnOnce "pasystray &"
   spawnOnce "xsetroot -cursor_name left_ptr &"
   spawnOnce "xmodmap ~/.config/.dotfiles/config/x11/Xmodmap"
-  spawnOnce "~/.config/xmonad/xinit"
+  spawnOnce "~/.config/wm/xinit"
 
   setDefaultCursor xC_left_ptr
   setWMName "LG3D"

@@ -45,7 +45,6 @@
       };
     in rec {
       devShell = import ./shell.nix;
-      wm = import ./nix/wm-service.nix;
       defaultPackage = pkgs.haskellPackages.mzanic-xmonad;
     }) // {
       inherit overlays overlay;
