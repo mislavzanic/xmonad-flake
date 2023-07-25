@@ -1,7 +1,7 @@
 {-# LANGUAGE PostfixOperators    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Hosts.Milivoj where
+module Hosts.Mzanic where
 
 import Xmobar
     ( defaultConfig,

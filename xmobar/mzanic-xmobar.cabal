@@ -11,7 +11,7 @@ library
                  , Config.Helpers
                  , Config.Widgets
                  , Config.BarConfig
-                 , Hosts.Milivoj
+                 , Hosts.Mzanic
                  , Hosts.Ilija
 
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -O2 -rtsopts -threaded -with-rtsopts=-N

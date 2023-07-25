@@ -6,7 +6,7 @@ module Bar where
 import Xmobar (Config(commands, template), Runnable)
 
 import qualified Hosts.Ilija as Ilija
-import qualified Hosts.Milivoj as Milivoj
+import qualified Hosts.Mzanic as Mzanic
 import Config.BarConfig
 
 myConfig :: Int -> String -> String -> Config
@@ -18,11 +18,9 @@ myConfig n host pos = ( baseConfig n pos )
 myCommands :: Int -> String -> String -> [Runnable]
 myCommands n host pos = case host of
   "ilija" -> Ilija.myCommands n pos
-  "milivoj" -> Milivoj.myCommands n pos
-  _ -> []
+  _ -> Mzanic.myCommands n pos
 
 myTemplate :: Int -> String -> String -> String
 myTemplate n host pos = case host of
   "ilija" -> Ilija.myTemplate n pos
-  "milivoj" -> Milivoj.myTemplate n pos
-  _ -> ""
+  _ -> Mzanic.myTemplate n pos

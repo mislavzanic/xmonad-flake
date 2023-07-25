@@ -26,10 +26,12 @@ import Prelude
 
 import XMonad
 import Config.Hosts
+import XMonad.Config.Desktop
 
 
 main :: String -> IO ()
-main h = xmonad $ hostConfig h
+main h = xmonad desktopConfig
+-- $ hostConfig h
   --      . usePrefixArgument "M-u"
   --      . setEwmhActivateHook activateHook
   --      . ewmhFullscreen

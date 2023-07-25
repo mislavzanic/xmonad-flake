@@ -15,7 +15,7 @@ library
                    Hooks.StartupHook
                    Hooks.RescreenHook
                    Hooks.HandleEventHook
-                   Hosts.Milivoj
+                   Hosts.Mzanic
                    Hosts.Ilija
                    Hosts.Helpers
                    Theme.Xprop
