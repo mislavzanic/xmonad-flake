@@ -77,8 +77,8 @@ baseConfig = usePrefixArgument "M-u"
       
 
 -- hostConfig :: String -> XConfig 
-hostConfig hostname = dynamicEasySBs ( pure . barSpawner hostname )
-                    . addProfiles (profiles hostname) (defaultHostProfile hostname)
+hostConfig hostname = -- dynamicEasySBs ( pure . barSpawner hostname )
+                    addProfiles (profiles hostname) (defaultHostProfile hostname)
                     $ baseConfig
                       { workspaces = map (tiName . topicItem) $ topics hostname
                       , layoutHook = lessBorders OnlyScreenFloat $ myLayout hostname
