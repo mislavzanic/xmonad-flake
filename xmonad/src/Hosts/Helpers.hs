@@ -1,25 +1,22 @@
 module Hosts.Helpers where
 
 import qualified Hosts.Ilija as Ilija
-import qualified Hosts.Mzanic as Mzanic
+import qualified Hosts.Default as Default
 
 import Workspaces.Topics
 import XMonad.Actions.TopicSpace
 
 topicConfig :: String -> TopicConfig
 topicConfig host = case host of 
-  "mzanic"  -> Mzanic.topicConfig
   "ilija"   -> Ilija.topicConfig
-  _         -> TopicConfig{}
+  _         -> Default.topicConfig
 
 topics :: String -> [ProfileItem]
 topics host = case host of
-  "mzanic" -> Mzanic.topics
   "ilija"   -> Ilija.topics
-  _         -> []
+  _         -> Default.topics
 
 defaultHostProfile :: String -> String
 defaultHostProfile host = case host of
-  "mzanic" -> Mzanic.defaultProfile
   "ilija"   -> Ilija.defaultProfile
-  _         -> ""
+  _         -> Default.defaultProfile

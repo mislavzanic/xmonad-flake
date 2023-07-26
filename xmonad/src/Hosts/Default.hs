@@ -2,8 +2,8 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Hosts.Milivoj
--- Description :  Config for my work laptop
+-- Module      :  Hosts.Default
+-- Description :  Config for a laptop
 -- Copyright   :  (c) Mislav Zanic 2023
 -- License     :  BSD3-style
 --
@@ -13,7 +13,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Hosts.Mzanic where
+module Hosts.Default where
 
 import XMonad
 import XMonad.Actions.TopicSpace hiding ( switchNthLastFocusedByScreen, workspaceHistoryByScreen )
