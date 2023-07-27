@@ -56,6 +56,8 @@ myCommands n pos = case pos of
       [Run date]
     )
 
+myConfig :: Config -> Config
+myConfig c = c
 
 myTemplate :: Int -> String -> String
 myTemplate n pos = case pos of

@@ -58,6 +58,16 @@ myCommands n pos = case pos of
       [Run date]
     )
 
+myConfig :: Config -> Config
+myConfig c = c 
+  { font            = "Cantarell Bold 12"
+  , additionalFonts = [ "FontAwesome 16"
+                      , "Font Awesome 5 Free 16"
+                      , "Font Awesome 5 Free Solid 16"
+                      , "Font Awesome 5 Brands 16"
+                      , "Inconsolata Nerd Font 16"
+                      ]
+  }
 
 myTemplate :: Int -> String -> String
 myTemplate n pos = case pos of
