@@ -30,7 +30,9 @@ import XMonad.Config.Desktop
 
 
 main :: String -> IO ()
-main h = xmonad $ hostConfig h
+main h = xmonad $ hostConfig h 
+-- main :: String -> String -> IO ()
+-- main h configDir = xmonad $ hostConfig h configDir
 -- $ hostConfig h
   --      . usePrefixArgument "M-u"
   --      . setEwmhActivateHook activateHook

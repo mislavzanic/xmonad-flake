@@ -4,6 +4,7 @@
 module Config.BarConfig where
 
 import Xmobar
+import Config.Helpers
 
 baseConfig :: Int -> String -> Config
 baseConfig screenId pos = defaultConfig
@@ -30,7 +31,6 @@ baseConfig screenId pos = defaultConfig
   } where
     myppBgColor :: String = "#000000"
     myppTitle :: String = "#cccccc"
-    configDir :: String = "~/.config"
 
 getPosition :: Int -> String -> XPosition
 getPosition n pos = case pos of

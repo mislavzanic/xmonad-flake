@@ -3,6 +3,7 @@
 module Config.Alias
   ( myModMask
   , myTerminal
+  , configDir
   , myEditor
   , myPDF
   , myBrowser
@@ -23,6 +24,7 @@ import Prelude
 import XMonad.Actions.Search ( Browser )
 import XMonad.Hooks.StatusBar.PP (wrap)
 
+configDir     :: String    = "/home/mzanic/.config"
 myModMask     :: KeyMask   = mod4Mask
 myTerminal    :: String    = "alacritty"
 myEditor      :: String    = "emacsclient -c -a'emacs'"

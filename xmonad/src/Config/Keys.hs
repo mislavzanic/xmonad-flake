@@ -94,7 +94,6 @@ promptKeys =
   where
    chLang :: String -> X()
    chLang lang = spawn ("setxkbmap " <> lang) >> spawn ("xmodmap " <> configDir <> "/x11/Xmodmap")
-   configDir = "~/.config"
 
 wsKeys :: [(String, X())]
 wsKeys =

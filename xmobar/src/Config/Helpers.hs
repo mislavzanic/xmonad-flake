@@ -20,6 +20,8 @@ wrap
 wrap _ _ "" = ""
 wrap l r m  = l <> m <> r
 
+configDir :: String
+configDir = "/home/mzanic/.config"
 
 seconds, minutes :: Int -> Int
 seconds = (* 10)
