@@ -24,12 +24,13 @@ baseConfig screenId pos = defaultConfig
   , allDesktops     = True
   , persistent      = True
   -- TODO: fix this
-  , iconRoot        = "$XDG_CONFIG_HOME/xmobar/xpm"
+  , iconRoot        = configDir <> "/xmobar/xpm"
   , sepChar         = "%"
   , alignSep        = "}{"
   } where
     myppBgColor :: String = "#000000"
     myppTitle :: String = "#cccccc"
+    configDir :: String = "~/.config"
 
 getPosition :: Int -> String -> XPosition
 getPosition n pos = case pos of

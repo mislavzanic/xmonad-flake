@@ -14,6 +14,8 @@ import XMonad
 import qualified XMonad.StackSet as W
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DO
 
+import System.Environment
+
 
 import XMonad.Actions.CycleWS
 import XMonad.Actions.Profiles
@@ -91,7 +93,8 @@ promptKeys =
   ]
   where
    chLang :: String -> X()
-   chLang lang = spawn ("setxkbmap " <> lang) >> spawn "xmodmap $XDG_CONFIG_HOME/x11/Xmodmap"
+   chLang lang = spawn ("setxkbmap " <> lang) >> spawn ("xmodmap " <> configDir <> "/x11/Xmodmap")
+   configDir = "~/.config"
 
 wsKeys :: [(String, X())]
 wsKeys =
