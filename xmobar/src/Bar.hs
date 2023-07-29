@@ -10,7 +10,7 @@ import qualified Hosts.Mzanic as Mzanic
 import Config.BarConfig
 
 myConfig :: Int -> String -> String -> Config
-myConfig n host pos = (hostConfig host) . ( baseConfig n pos ) $
+myConfig n host pos = (hostConfig host) $ ( baseConfig n pos )
   { commands        = myCommands n host pos
   , template        = myTemplate n host pos
   }
