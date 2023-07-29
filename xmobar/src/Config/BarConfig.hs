@@ -24,7 +24,7 @@ baseConfig screenId pos = defaultConfig
   , allDesktops     = True
   , persistent      = True
   -- TODO: fix this
-  , iconRoot        = "/etc/xmobar/xpm"
+  , iconRoot        = "$XDG_CONFIG_HOME/xmobar/xpm"
   , sepChar         = "%"
   , alignSep        = "}{"
   } where

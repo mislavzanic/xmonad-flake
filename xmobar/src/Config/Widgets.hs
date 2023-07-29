@@ -58,4 +58,4 @@ cpu = Cpu [ "-t", inColor color1 (inAltIconFont "\xf2db") <> " <total>%"
           ] (2 `seconds`)
 
 trayer :: Command
-trayer = Com "/etc/xmobar/trayer-padding-icon.sh" [] "trayerpad" 20
+trayer = Com "$XDG_CONFIG_HOME/xmobar/trayer-padding-icon.sh" [] "trayerpad" 20

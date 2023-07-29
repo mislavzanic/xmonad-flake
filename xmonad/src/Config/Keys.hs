@@ -84,7 +84,14 @@ promptKeys =
       , ((noModMask, xK_r), ("Region screenshot", spawn "takeScreenshot.sh Region"))
       , ((noModMask, xK_a), ("Active window screenshot", spawn "takeScreenshot.sh Active Window"))
       ])
+  , ("M-o", visualSubmap winConfig . M.fromList $
+      [ ((noModMask, xK_h), ("Cro", chLang "hr"))
+      , ((noModMask, xK_e), ("Eng", chLang "us"))
+      ])
   ]
+  where
+   chLang :: String -> X()
+   chLang lang = spawn ("setxkbmap " <> lang) >> spawn "xmodmap $XDG_CONFIG_HOME/x11/Xmodmap"
 
 wsKeys :: [(String, X())]
 wsKeys =
@@ -135,7 +142,6 @@ appKeys =
   , ("M-C-f", showLastHidden)
 
   , ("M-C-l", spawn "i3lock -n -i ~/.local/share/wallpaper")
-  -- , ("M-C-l", spawn "dm-tool lock")
   ]
 
 myKeys :: String -> [(String, X ())]
