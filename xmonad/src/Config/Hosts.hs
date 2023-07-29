@@ -61,7 +61,7 @@ baseConfig = usePrefixArgument "M-u"
   where 
     myConfig = desktopConfig
       { manageHook         = ( isFullscreen --> doFullFloat ) <+> manageDocks <+> myManageHook <+> manageHook desktopConfig
-      -- , startupHook        = myStartupHook 
+      , startupHook        = myStartupHook
       , handleEventHook    = handleEventHook desktopConfig <+> trayerAboveXmobarEventHook <+> myHandleEventHook
       , workspaces         = map show [1..9]
       , borderWidth        = myBorderWidth
