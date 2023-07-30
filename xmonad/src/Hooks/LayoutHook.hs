@@ -48,11 +48,11 @@ rTall m r c = ResizableTall m r c []
 
 -- napraviti profile kao LayoutModifiers -> koristiti modWorkspaces iz PerWorkspace modula
 -- filtriranje postaje ez-pez
-myLayout host = onWorkspace "vid:Media" full lh
+myLayout host = onWorkspace "vid" full lh
   where
     lh = layoutOpts
-       $ onWorkspaces hackingWorkspaces (wideScreen hack ||| full)
-       $ onWorkspaces tiledWorkspaces (wideScreen tiled ||| full)
+       $ onWorkspaces hackingWorkspaces (hack ||| full)
+       $ onWorkspaces tiledWorkspaces (tiled ||| full)
        $ tiled ||| hack ||| full
     layoutOpts = cutWords 2 . hiddenWindows . addTabbed . toggleBorders . avoidStruts
 
