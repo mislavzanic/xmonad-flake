@@ -58,15 +58,16 @@ myCommands n pos = case pos of
       [Run date]
     )
 
-myConfig :: Config -> Config
-myConfig c = c 
-  { font            = "Cantarell Bold 15"
+myConfig :: Int -> String -> Config -> Config
+myConfig screenId pos c = c 
+  { font            = "Iosevka Nerd Font Bold 15"
   , additionalFonts = [ "FontAwesome 20"
                       , "Font Awesome 5 Free 20"
                       , "Font Awesome 5 Free Solid 20"
                       , "Font Awesome 5 Brands 20"
                       , "Inconsolata Nerd Font 20"
                       ]
+  , position        = getPosition screenId pos
   }
 
 myTemplate :: Int -> String -> String
@@ -91,8 +92,8 @@ myTemplate n pos = case pos of
 
 getPosition :: Int -> String -> XPosition
 getPosition n pos = case pos of
-  "bottom" -> OnScreen n (BottomH 24)
-  _        -> OnScreen n (TopH 24)
+  "bottom" -> OnScreen n (BottomH 28)
+  _        -> OnScreen n (TopH 28)
 
 screenLog :: Int -> String
 screenLog n = "_XMONAD_LOG_" <> show n
