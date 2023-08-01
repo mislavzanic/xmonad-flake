@@ -16,7 +16,7 @@ import Xmobar
       Runnable(..) )
 
 import Data.List ( intercalate )
-import Config.Helpers ( inColor, colorSeparator )
+import Config.Helpers ( inColor, colorSeparator, screenLog )
 import Config.BarConfig
 import Config.Widgets
     ( battery,
@@ -35,28 +35,14 @@ myCommands n pos = case pos of
   _        -> topWidgets
   where
   topWidgets :: [Runnable]
-  topWidgets =
-    [ Run cpu
-    , Run memory
-    , Run coreTemp
-    , Run diskUsage
+  topWidgets = (baseTopWidgets n pos) <>
+    [ Run coreTemp
     , Run brightness
     , Run $ wireless "wlp0s20f3"
-    , Run date
-    , Run $ battery ["BAT0"]
-    , Run $ XPropertyLog $ screenLog n
     ]
 
   bottomWidgets :: [Runnable]
-  bottomWidgets =
-    [ Run $ XPropertyLog $ screenLog n
-    , Run $ XPropertyLog "_XMOBAR_HIDDEN_WIN"
-    ] <>
-    (if n == 0 then
-      [Run trayer]
-    else
-      [Run date]
-    )
+  bottomWidgets = baseBottomWidgets n pos
 
 myConfig :: Int -> String -> Config -> Config
 myConfig screenId pos c = c 
@@ -67,7 +53,7 @@ myConfig screenId pos c = c
                       , "Font Awesome 5 Brands 20"
                       , "Inconsolata Nerd Font 20"
                       ]
-  , position        = getPosition screenId pos
+  , position        = getPosition screenId pos 32
   }
 
 myTemplate :: Int -> String -> String
@@ -88,12 +74,3 @@ myTemplate n pos = case pos of
                                                      , "%wlp0s20f3wi%"
                                                      , "%date%"
                                                      ]
-
-
-getPosition :: Int -> String -> XPosition
-getPosition n pos = case pos of
-  "bottom" -> OnScreen n (BottomH 32)
-  _        -> OnScreen n (TopH 32)
-
-screenLog :: Int -> String
-screenLog n = "_XMONAD_LOG_" <> show n

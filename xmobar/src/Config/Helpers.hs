@@ -31,3 +31,6 @@ colorSeparator :: String -> String
 colorSeparator c = inColor myppSepColor $ "  " <> c <> "  "
   where
     myppSepColor :: String = "#586E75"
+
+screenLog :: Int -> String
+screenLog n = "_XMONAD_LOG_" <> show n

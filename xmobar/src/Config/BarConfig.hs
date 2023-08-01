@@ -3,6 +3,9 @@
 
 module Config.BarConfig
   ( baseConfig
+  , baseTopWidgets
+  , baseBottomWidgets
+  , getPosition
   ) where
 
 import Xmobar
@@ -20,7 +23,7 @@ baseConfig screenId pos = defaultConfig
   , bgColor         = myppBgColor
   , borderColor     = myppBgColor
   , fgColor         = myppTitle
-  , position        = getPosition screenId pos
+  , position        = getPosition screenId pos 24
   , lowerOnStart    = True
   , overrideRedirect = True
   , hideOnStart     = False
@@ -34,7 +37,27 @@ baseConfig screenId pos = defaultConfig
     myppBgColor :: String = "#000000"
     myppTitle :: String = "#cccccc"
 
-getPosition :: Int -> String -> XPosition
-getPosition n pos = case pos of
-  "bottom" -> OnScreen n (BottomH 24)
-  _        -> OnScreen n (TopH 24)
+baseTopWidgets :: Int -> String -> [Runnable]
+baseTopWidgets n pos =
+  [ Run cpu
+  , Run memory
+  , Run diskUsage
+  , Run date
+  , Run $ battery ["BAT0"]
+  , Run $ XPropertyLog $ screenLog n
+  ]
+
+baseBottomWidgets n pos =
+  [ Run $ XPropertyLog $ screenLog n
+  , Run $ XPropertyLog "_XMOBAR_HIDDEN_WIN"
+  ] <>
+  (if n == 0 then
+    [Run trayer]
+  else
+    [Run date]
+  )
+
+getPosition :: Int -> String -> Int -> XPosition
+getPosition n pos size = case pos of
+  "bottom" -> OnScreen n (BottomH size)
+  _        -> OnScreen n (TopH size)
