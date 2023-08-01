@@ -1,7 +1,9 @@
 {-# LANGUAGE PostfixOperators    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Config.BarConfig where
+module Config.BarConfig
+  ( baseConfig
+  ) where
 
 import Xmobar
 import Config.Helpers
