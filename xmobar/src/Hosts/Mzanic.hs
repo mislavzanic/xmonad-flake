@@ -60,7 +60,7 @@ myCommands n pos = case pos of
 
 myConfig :: Int -> String -> Config -> Config
 myConfig screenId pos c = c 
-  { font            = "Cantarell Bold 15"
+  { font            = "Cantarell Bold 16"
   , additionalFonts = [ "FontAwesome 20"
                       , "Font Awesome 5 Free 20"
                       , "Font Awesome 5 Free Solid 20"
