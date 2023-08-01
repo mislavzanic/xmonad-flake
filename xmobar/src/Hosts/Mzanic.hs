@@ -41,7 +41,7 @@ myCommands n pos = case pos of
     , Run coreTemp
     , Run diskUsage
     , Run brightness
-    , Run $ wireless "wlp2s0"
+    , Run $ wireless "wlp0s20f3"
     , Run date
     , Run $ battery ["BAT0"]
     , Run $ XPropertyLog $ screenLog n
@@ -60,7 +60,7 @@ myCommands n pos = case pos of
 
 myConfig :: Int -> String -> Config -> Config
 myConfig screenId pos c = c 
-  { font            = "Iosevka Nerd Font Bold 15"
+  { font            = "Cantarell Bold 15"
   , additionalFonts = [ "FontAwesome 20"
                       , "Font Awesome 5 Free 20"
                       , "Font Awesome 5 Free Solid 20"
@@ -92,8 +92,8 @@ myTemplate n pos = case pos of
 
 getPosition :: Int -> String -> XPosition
 getPosition n pos = case pos of
-  "bottom" -> OnScreen n (BottomH 28)
-  _        -> OnScreen n (TopH 28)
+  "bottom" -> OnScreen n (BottomH 30)
+  _        -> OnScreen n (TopH 30)
 
 screenLog :: Int -> String
 screenLog n = "_XMONAD_LOG_" <> show n
