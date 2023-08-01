@@ -92,8 +92,8 @@ myTemplate n pos = case pos of
 
 getPosition :: Int -> String -> XPosition
 getPosition n pos = case pos of
-  "bottom" -> OnScreen n (BottomH 30)
-  _        -> OnScreen n (TopH 30)
+  "bottom" -> OnScreen n (BottomH 32)
+  _        -> OnScreen n (TopH 32)
 
 screenLog :: Int -> String
 screenLog n = "_XMONAD_LOG_" <> show n
