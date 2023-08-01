@@ -85,7 +85,7 @@ myTemplate n pos = case pos of
                                                     ]
     rightWidgets :: [String] = inColor "#cccccc" <$> [ "%coretemp%"
                                                      , "%disku%"
-                                                     , "%wlp2s0wi%"
+                                                     , "%wlp0s20f3wi%"
                                                      , "%date%"
                                                      ]
 
