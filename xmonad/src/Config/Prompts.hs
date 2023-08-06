@@ -1,10 +1,6 @@
 {-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE LambdaCase     #-}
-{-# LANGUAGE MultiWayIf     #-}
 
 module Config.Prompts where
-
-import Config.Alias ( myFont )
 
 import Theme.Xprop ( basebg, basefg, base01 )
 
@@ -15,31 +11,35 @@ import XMonad
 import XMonad.Actions.Search
 import XMonad.Prompt
 import XMonad.Prompt.FuzzyMatch
-import XMonad.Prompt.Input
-import XMonad.Util.Run
 
-promptTheme :: XPConfig
-promptTheme = def
-      { font                = myFont
-      , bgColor             = basebg
-      , fgColor             = basefg
-      , bgHLight            = base01
-      , fgHLight            = basebg
-      , borderColor         = base01
-      , promptBorderWidth   = 1
-      , position            = CenteredAt 0.25 0.5
-      , height              = 20
-      , historySize         = 256
-      , promptKeymap        = emacsLikeXPKeymap
-      , changeModeKey       = xK_Control_R
-      , historyFilter       = id
-      , defaultText         = []
-      , showCompletionOnTab = False
-      , searchPredicate     = fuzzyMatch
-      , sorter = fuzzySort
-      , alwaysHighlight     = True
-      , maxComplRows        = Nothing      -- set to Just 5 for 5 rows
-      }
+-- import Hosts.Default as Default
+-- import Hosts.Mzanic as Mzanic
+
+defaultPromptTheme :: XPConfig
+defaultPromptTheme = def
+  { bgColor             = basebg
+  , fgColor             = basefg
+  , bgHLight            = base01
+  , fgHLight            = basebg
+  , borderColor         = base01
+  , promptBorderWidth   = 1
+  , position            = CenteredAt 0.25 0.5
+  , historySize         = 256
+  , promptKeymap        = emacsLikeXPKeymap
+  , changeModeKey       = xK_Control_R
+  , historyFilter       = id
+  , defaultText         = []
+  , showCompletionOnTab = False
+  , searchPredicate     = fuzzyMatch
+  , sorter              = fuzzySort
+  , alwaysHighlight     = True
+  , maxComplRows        = Nothing      -- set to Just 5 for 5 rows
+  } 
+
+-- hostPromptTheme :: String -> XPConfig -> XPConfig
+-- hostPromptTheme host conf = case host of
+--   "mzanic" -> Mzanic.promptTheme conf
+--   _        -> Default.promptTheme conf
 
 url, reddit, xmonadDocs, nixpkgs :: SearchEngine
 reddit     = searchEngine  "reddit" "https://old.reddit.com/search/?q="

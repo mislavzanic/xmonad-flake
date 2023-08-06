@@ -4,8 +4,6 @@ module Workspaces.Profile where
 
 import qualified Data.Set as Set
 
-import Hosts.Helpers
-
 import XMonad
 import qualified XMonad.StackSet as W
 import XMonad.Actions.Profiles
@@ -17,21 +15,22 @@ import XMonad.Prompt (XPConfig, XPrompt (showXPrompt), mkComplFunFromList', mkXP
 import Data.Foldable
 import Data.List (groupBy, sortBy)
 import XMonad.Actions.PerProfileWindows (hideBeforeSwitch, showAfterSwitch)
+import XMonad.Util.UserConf (UserConf (userPromptConfig, userTopicConfig, userTopics))
 
-profileKeys :: String -> [(String, X())]
+profileKeys :: UserConf -> [(String, X())]
 profileKeys = topicKeys 
 
-topicProfiles :: String -> [Profile]
-topicProfiles host = (\p -> Profile p $ getTopics p $ topics host) <$> ps
+topicProfiles :: UserConf -> [Profile]
+topicProfiles conf = (\p -> Profile p $ getTopics p $ userTopics conf) <$> ps
   where
-    ps = Set.toList . Set.fromList $ foldl (\acc pi' -> acc <> pId pi') [] $ topics host
+    ps = Set.toList . Set.fromList $ foldl (\acc pi' -> acc <> pId pi') [] $ userTopics conf
     getTopics pid ts = map (tiName . topicItem) $ filter ((pid `elem`) . pId) ts
 
-profiles :: String -> [Profile]
+profiles :: UserConf -> [Profile]
 profiles = topicProfiles 
 
-topicKeys :: String -> [(String, X())]
-topicKeys host =
+topicKeys :: UserConf -> [(String, X())]
+topicKeys conf =
   [ ("M-a", withPrefixArgument $
               \case Raw _ -> spawnTermInTopic tc >> spawnEditorInTopic tc
                     _     -> currentTopicAction tc
@@ -49,14 +48,16 @@ topicKeys host =
   ]
   where
     mby f tn = if tn == "" then return () else f tn
-    tc = topicConfig host
+    tc = userTopicConfig conf
+
+    promptTheme = userPromptConfig conf
 
     groups :: [([ProfileItem], String)]
     groups = map (\p -> (map fst p, snd . head $ p))
            . sortGroupBy snd
            . concatMap (\x -> zip (x <> repeat (mkItem (pId $ head x) [] $ TI "" "" $ return ()))  (map show [1..9 :: Int]))
            . sortGroupBy (head . pId)
-           . concatMap (\p -> map (\pid -> mkItem [pid] (layouts p) $ topicItem p) $ pId p) $ topics host
+           . concatMap (\p -> map (\pid -> mkItem [pid] (layouts p) $ topicItem p) $ pId p) $ userTopics conf
 
     sortGroupBy f = groupBy (\x y -> f x == f y) . sortBy (\x y -> compare (f x) (f y))
 

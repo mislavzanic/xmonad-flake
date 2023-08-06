@@ -2,9 +2,7 @@
 
 module Config.Keys where
 
-import Workspaces.Scratchpad
 import Workspaces.Profile
-import Config.Alias
 import Config.Prompts
 import Theme.Xprop
 
@@ -14,9 +12,7 @@ import XMonad
 import qualified XMonad.StackSet as W
 import qualified XMonad.Actions.DynamicWorkspaceOrder as DO
 
-import System.Environment
-
-
+import XMonad.Prompt
 import XMonad.Actions.CycleWS
 import XMonad.Actions.Profiles
 import XMonad.Actions.Promote ( promote )
@@ -35,22 +31,23 @@ import XMonad.Layout.Spacing (toggleWindowSpacingEnabled, toggleScreenSpacingEna
 import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
 import XMonad.Actions.Minimize (minimizeWindow, withLastMinimized, maximizeWindowAndFocus)
 import XMonad.Actions.PerProfileWindows (hideAll, showAll, hideFocused, showLastHidden, swapWithHidden)
+import XMonad.Util.UserConf
 
 type Keybind = (String, X ())
 
 windowsKeys :: [Keybind]
 windowsKeys =
-  [ ("M-j", focusDown)
-  , ("M-k", focusUp)
-  , ("M-m", focusMaster)
+  [ ("M-j",   focusDown)
+  , ("M-k",   focusUp)
+  , ("M-m",   focusMaster)
   , ("M-S-j", swapDown)
   , ("M-S-k", swapUp)
 
   , ("M-C-j", onGroup W.focusDown')
   , ("M-C-k", onGroup W.focusUp')
 
-  , ("M-w", nextScreen)
-  , ("M-e", prevScreen)
+  , ("M-w",   nextScreen)
+  , ("M-e",   prevScreen)
   , ("M-C-w", swapNextScreen)
   , ("M-C-e", swapPrevScreen)
 
@@ -62,53 +59,57 @@ windowsKeys =
   , ("M-h", sendMessage Shrink)
   , ("M-l", sendMessage Expand)
 
-  , ("M-;"  , withFocused $ sendMessage . mergeDir id)
-  , ("M-C-;"  , withFocused (sendMessage . UnMerge) *> windows W.focusUp)
+  , ("M-;"   , withFocused $ sendMessage . mergeDir id)
+  , ("M-C-;" , withFocused (sendMessage . UnMerge) *> windows W.focusUp)
   ]
 
 scratchpadKeys :: [(String, X ())]
 scratchpadKeys =
   [ ("M-C-<Return>", namedScratchpadAction [] "Term")
-  , ("M-C-s", namedScratchpadAction [] "Spotify")
-  -- , ("M-C-t", namedScratchpadAction [] "org-todo")
-  , ("M-C-u", namedScratchpadAction [] "Emacs")
+  , ("M-C-s",        namedScratchpadAction [] "Spotify")
+  , ("M-C-u",        namedScratchpadAction [] "Emacs")
   ]
 
-promptKeys :: [(String, X ())]
-promptKeys =
-  [ ("M-p", shellPrompt promptTheme)
-  , ("M-[", windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
-  , ("M-]", windowPrompt promptTheme Bring allProfileWindows)
-  , ("M1-s", visualSubmap winConfig $ searchList $ promptSearch promptTheme)
+promptKeys :: UserConf -> [(String, X ())]
+promptKeys conf =
+  [ ("M-p",  shellPrompt promptTheme)
+  , ("M-[",  windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
+  , ("M-]",  windowPrompt promptTheme Bring allProfileWindows)
+  , ("M1-s", visualSubmap winConf $ searchList $ promptSearch promptTheme)
 
-  , ("M-s", visualSubmap winConfig . M.fromList $
+  , ("M-s", visualSubmap winConf . M.fromList $
       [ ((noModMask, xK_f), ("Fullscreen screenshot", spawn "takeScreenshot.sh Fullscreen"))
       , ((noModMask, xK_r), ("Region screenshot", spawn "takeScreenshot.sh Region"))
       , ((noModMask, xK_a), ("Active window screenshot", spawn "takeScreenshot.sh Active Window"))
       ])
-  , ("M-o", visualSubmap winConfig . M.fromList $
+  , ("M-o", visualSubmap winConf . M.fromList $
       [ ((noModMask, xK_h), ("Cro", chLang "hr"))
       , ((noModMask, xK_e), ("Eng", chLang "us"))
       ])
   ]
   where
    chLang :: String -> X()
-   chLang lang = spawn ("setxkbmap " <> lang) >> spawn ("xmodmap " <> configDir <> "/x11/Xmodmap")
+   chLang lang = spawn ("setxkbmap " <> lang) >> spawn ("xmodmap " <> userConfDir conf <> "/x11/Xmodmap")
 
-wsKeys :: [(String, X())]
-wsKeys =
-  [ ("M1-h", DO.swapWith Prev filterWS)
-  , ("M1-l", DO.swapWith Next filterWS)
-  , ("M1-j", DO.moveTo Next filterWS)
-  , ("M1-k", DO.moveTo Prev filterWS)
-  , ("M-C-p", switchProfilePrompt promptTheme)
-  , ("M1-`", toggleLastProfile)
+   winConf = winConfig conf
+
+   promptTheme :: XPConfig
+   promptTheme = userPromptConfig conf
+
+wsKeys :: UserConf -> [(String, X())]
+wsKeys conf =
+  [ ("M1-h",  DO.swapWith Prev filterWS)
+  , ("M1-l",  DO.swapWith Next filterWS)
+  , ("M1-j",  DO.moveTo Next filterWS)
+  , ("M1-k",  DO.moveTo Prev filterWS)
+  , ("M-C-p", switchProfilePrompt $ userPromptConfig conf)
+  , ("M1-`",  toggleLastProfile)
   ]
   where
     filterWS = wsFilter :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]
 
-layoutKeys :: [Keybind]
-layoutKeys =
+layoutKeys :: UserConf -> [Keybind]
+layoutKeys conf =
   [ ("M-<Tab>",     sendMessage NextLayout)
   , ("M-C-<Space>", sendMessage (Toggle NBFULL) >> sendMessage ToggleStruts)
   , ("M-C-b",       sendMessage $ Toggle NOBORDERS)
@@ -121,12 +122,14 @@ layoutKeys =
                              _     -> sendMessage ToggleStruts
     )
   ]
+  where
+   spacingWidth = userSpacingWidth conf
 
-appKeys :: [(String, X ())]
-appKeys =
+appKeys :: UserConf -> [(String, X ())]
+appKeys conf =
   [ ("M-q", kill)
   , ("M-C-q", withUnfocused killWindow)
-  , ("M-S-r", spawn "xmonad --restart")
+  -- , ("M-S-r", spawn "xmonad --restart")
 
   , ("<XF86AudioRaiseVolume>", spawn "pamixer -i 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")
   , ("<XF86AudioLowerVolume>", spawn "pamixer -d 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")
@@ -135,7 +138,7 @@ appKeys =
   , ("<XF86MonBrightnessDown>", spawn "brightnessctl s $(($(brightnessctl g) - 50))")
   , ("<XF86MonBrightnessUp>",   spawn "brightnessctl s $(($(brightnessctl g) + 50))")
 
-  , ("M1-w", bindOn [("Work", spawn "brave"), ("", spawn "firefox")])
+  , ("M1-w", spawn $ userBrowser conf)
 
   , ("M-d", hideAll)
   , ("M-C-d", showAll)
@@ -143,17 +146,17 @@ appKeys =
   , ("M-f", hideFocused)
   , ("M-C-f", showLastHidden)
 
-  , ("M-C-l", spawn "i3lock -n -i ~/.local/share/wallpaper")
+  , ("M-C-l", spawn $ userLock conf)
   ]
 
-myKeys :: String -> [(String, X ())]
-myKeys host = concat
-  [ appKeys
-  , layoutKeys
-  , promptKeys
+myKeys :: UserConf -> [(String, X ())]
+myKeys conf = concat
+  [ appKeys conf
+  , layoutKeys conf
+  , promptKeys conf
+  , wsKeys conf
   , windowsKeys
-  , profileKeys host
-  , wsKeys
+  , profileKeys conf
   , scratchpadKeys
   ]
 
@@ -165,13 +168,14 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList
                                        >> windows W.shiftMaster)
     ]
 
-winConfig :: WindowConfig
-winConfig = WindowConfig { winBg = basebg
-                         , winFg = basefg
-                         , winFont = myFont
-                         , winRect = CustomRect Rectangle { rect_y = -40
-                                                          , rect_x = 1600
-                                                          , rect_width = 350
-                                                          , rect_height = 430
-                                                          }
-                         }
+winConfig :: UserConf -> WindowConfig
+winConfig conf = WindowConfig
+  { winBg = basebg
+  , winFg = basefg
+  , winFont = userFontStr conf
+  , winRect = CustomRect Rectangle { rect_y = -40
+                                   , rect_x = 1600
+                                   , rect_width = 350
+                                   , rect_height = 430
+                                   }
+  }

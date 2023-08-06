@@ -6,7 +6,6 @@ module Hooks.LayoutHook where
 
 import Data.Ratio
 
-import Config.Alias (myFont)
 import Theme.Xprop
 
 
@@ -28,14 +27,12 @@ import XMonad.Layout.Spacing
 import XMonad.Layout.SubLayouts
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns ( ThreeCol(ThreeColMid) )
-import XMonad.Layout.Minimize (minimize)
 import XMonad.Layout.PerScreen (ifWider)
 import XMonad.Layout.CenteredIfSingle (centeredIfSingle)
 import Workspaces.Topics (ProfileItem (layouts, topicItem))
 import XMonad.Actions.TopicSpace (TopicItem(tiName))
 import XMonad.Layout.Hidden (hiddenWindows)
-
-import Hosts.Helpers
+import XMonad.Util.UserConf (UserConf(userTopics, userFontStr))
 
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
@@ -48,7 +45,7 @@ rTall m r c = ResizableTall m r c []
 
 -- napraviti profile kao LayoutModifiers -> koristiti modWorkspaces iz PerWorkspace modula
 -- filtriranje postaje ez-pez
-myLayout host = onWorkspace "vid" full lh
+myLayout conf = onWorkspace "vid" full lh
   where
     lh = layoutOpts
        $ onWorkspaces hackingWorkspaces (hack ||| full)
@@ -86,7 +83,7 @@ myLayout host = onWorkspace "vid" full lh
     delta   = 3/100
 
     toggleBorders = mkToggle $ NBFULL ?? NOBORDERS ?? EOT
-    addTabbed = boringAuto . addTabs shrinkText tabTheme . subLayout [] Simplest
+    addTabbed = boringAuto . addTabs shrinkText (tabTheme conf) . subLayout [] Simplest
 
     rn :: String -> l a -> ModifiedLayout Rename l a
     rn s = renamed [Replace s]
@@ -94,10 +91,10 @@ myLayout host = onWorkspace "vid" full lh
     gapSize :: Integer = 0
 
     hackingWorkspaces :: [String]
-    hackingWorkspaces = map (tiName . topicItem) . filter (("hack" `elem`) . layouts) $ topics host
+    hackingWorkspaces = map (tiName . topicItem) . filter (("hack" `elem`) . layouts) $ userTopics conf
 
     tiledWorkspaces :: [String]
-    tiledWorkspaces = map (tiName . topicItem) . filter (("tiled" `elem`) . layouts) $ topics host
+    tiledWorkspaces = map (tiName . topicItem) . filter (("tiled" `elem`) . layouts) $ userTopics conf
 
 
 data EmptyShrinker = EmptyShrinker deriving (Read, Show)
@@ -107,8 +104,8 @@ instance Shrinker EmptyShrinker where
 cutWords :: Int -> l a -> ModifiedLayout Rename l a
 cutWords i = renamed [CutWordsLeft i]
 
-tabTheme :: Theme
-tabTheme = def
+tabTheme :: UserConf -> Theme
+tabTheme conf = def
   { activeColor = base01
   , urgentColor = base01
   , inactiveColor = basebg
@@ -116,5 +113,5 @@ tabTheme = def
   , inactiveBorderColor = basebg
   , activeTextColor     = base00
   , inactiveTextColor   = base01
-  , fontName = myFont
+  , fontName = userFontStr conf
   }

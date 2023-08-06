@@ -16,14 +16,14 @@ library
                    Hooks.RescreenHook
                    Hooks.HandleEventHook
                    Hosts.Default
-                   Hosts.Ilija
-                   Hosts.Helpers
+                   Hosts.Mzanic
                    Theme.Xprop
                    Workspaces.Topics
                    Workspaces.Profile
                    Workspaces.Scratchpad
                    XMonad.Actions.Profiles
                    XMonad.Actions.PerProfileWindows
+                   XMonad.Util.UserConf
 
   build-depends:     X11
                    , base

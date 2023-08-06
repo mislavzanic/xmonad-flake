@@ -1,12 +1,12 @@
 module Config.Hosts where
 
-import Hosts.Helpers
-
 import Workspaces.Topics ( ProfileItem (topicItem) )
 
-import Config.Alias ( myBorderWidth, myTerminal, myModMask )
 import Config.Bar ( barSpawner )
 import Config.Keys ( myKeys )
+
+import Hosts.Default as Default
+import Hosts.Mzanic as Mzanic
 
 import Hooks.ManageHook ( activateHook, myManageHook )
 import Hooks.LayoutHook ( myLayout )
@@ -47,6 +47,8 @@ import XMonad.Util.Hacks (trayerAboveXmobarEventHook)
 import XMonad.Actions.Profiles
 import Workspaces.Profile
 import XMonad.Actions.PerProfileWindows (hiddenWSLogHook)
+import XMonad.Util.UserConf (UserConf(userBorderWidth, userTerminal, userModMask, userTopics, userDefaultProfile))
+import XMonad (XConfig(layoutHook))
 -- import XMonad.Layout.Decoration
 
 -- baseConfig :: (ModifiedLayout l) => XConfig l
@@ -64,9 +66,6 @@ baseConfig = usePrefixArgument "M-u"
       , startupHook        = myStartupHook
       , handleEventHook    = handleEventHook desktopConfig <+> trayerAboveXmobarEventHook <+> myHandleEventHook
       , workspaces         = map show [1..9]
-      , borderWidth        = myBorderWidth
-      , terminal           = myTerminal
-      , modMask            = myModMask
       , normalBorderColor  = "#333333"
       , focusedBorderColor = base01
       , logHook            = hiddenWSLogHook
@@ -76,13 +75,18 @@ baseConfig = usePrefixArgument "M-u"
       }
       
 
--- hostConfig :: String -> XConfig 
-hostConfig hostname = --configDir =
-  dynamicEasySBs ( pure . barSpawner hostname )
-  . addProfiles (profiles hostname) (defaultHostProfile hostname)
+hostConfig hostname = dynamicEasySBs ( pure . barSpawner hostname )
+  . addProfiles (profiles myConf) (userDefaultProfile myConf)
   $ baseConfig
-  { workspaces = map (tiName . topicItem) $ topics hostname
-  , layoutHook = lessBorders OnlyScreenFloat $ myLayout hostname
-  } `additionalKeysP` myKeys hostname
+  { workspaces  = map (tiName . topicItem) $ userTopics myConf
+  , layoutHook  = lessBorders OnlyScreenFloat $ myLayout myConf
+  , borderWidth = userBorderWidth myConf
+  , terminal    = userTerminal myConf
+  , modMask     = userModMask myConf
+  } `additionalKeysP` myKeys myConf
+  where
+   myConf = case hostname of
+     "mzanic" -> Mzanic.userConf
+     _        -> Default.userConf
 
 

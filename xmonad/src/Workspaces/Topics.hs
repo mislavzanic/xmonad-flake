@@ -12,7 +12,6 @@ module Workspaces.Topics
   )where
 
 import Control.Monad
-import Config.Alias ( myEditor )
 import Data.Maybe ( fromMaybe )
 
 import XMonad
@@ -21,20 +20,11 @@ import XMonad.Actions.TopicSpace hiding ( switchNthLastFocusedByScreen, workspac
 import XMonad.Prompt
 import qualified XMonad.StackSet as W
 import XMonad.Util.Run
+import XMonad.Util.UserConf
 import qualified Data.Map as Map
-
-data ProfileItem = ProfileItem
-  { topicItem :: !TopicItem
-  , pId       :: ![ProfileId]
-  , layouts   :: [String]
-  }
 
 appendToName :: ProfileId -> TopicItem -> TopicItem
 appendToName p ti = TI (tiName ti <> ":" <> p) (tiDir ti) (tiAction ti)
-
-mkItem :: [ProfileId] -> [String] -> TopicItem -> ProfileItem
-mkItem pids ls ti = ProfileItem ti pids ls
-
 
 spawnTermInTopic :: TopicConfig -> X ()
 spawnTermInTopic tc = proc $ termInDir >-$ currentTopicDir tc
