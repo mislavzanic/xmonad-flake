@@ -8,7 +8,18 @@ module Config.BarConfig
   , getPosition
   ) where
 
-import Xmobar
+import Config.Widgets
+    ( battery,
+      date,
+      wireless,
+      brightness,
+      diskUsage,
+      coreTemp,
+      memory,
+      cpu,
+      trayer )
+
+import Xmobar hiding (date)
 import Config.Helpers
 
 baseConfig :: Int -> String -> Config

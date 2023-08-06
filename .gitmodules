@@ -10,3 +10,6 @@
 [submodule "X11-xft"]
 	path = xmonad/X11-xft
 	url = https://github.com/xmonad/X11-xft
+[submodule "xmobar/xmobar"]
+	path = xmobar/xmobar
+	url = https://codeberg.org/xmobar/xmobar

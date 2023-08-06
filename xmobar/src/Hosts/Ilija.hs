@@ -17,16 +17,8 @@ import Xmobar
 
 import Data.List ( intercalate )
 import Config.Helpers ( inColor, colorSeparator, screenLog )
-import Config.Widgets
-    ( battery,
-      date,
-      wireless,
-      brightness,
-      diskUsage,
-      coreTemp,
-      memory,
-      cpu,
-      trayer )
+import Config.Widgets ( wireless ) 
+import Config.BarConfig
 
 
 myCommands :: Int -> String -> [Runnable]
