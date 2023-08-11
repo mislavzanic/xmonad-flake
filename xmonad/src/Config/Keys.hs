@@ -93,7 +93,7 @@ promptKeys conf =
 
    winConf = winConfig conf
 
-   screenshotProg = userConfDir conf <> "/xmonad/" <> "takeScreenshot.sh"
+   screenshotProg = userConfDir conf <> "/xmonad/" <> "screenshot"
 
    promptTheme :: XPConfig
    promptTheme = userPromptConfig conf
