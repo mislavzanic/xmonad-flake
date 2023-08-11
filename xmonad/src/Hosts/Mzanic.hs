@@ -26,7 +26,7 @@ userConf :: UserConf
 userConf = def
   { userConfDir = "/home/mzanic/.config"
   , userEditor  = "emacsclient -c -a'emacs'"
-  , userBrowser = "google-chrome"
+  , userBrowser = browser
   , userLock    = "slock"
   , userModMask = mod4Mask
   , userTopics = home
@@ -42,11 +42,17 @@ userConf = def
      , defaultTopic       = "1"
      }
 
+   browser = "google-chrome"
+
    home :: [ProfileItem]
    home =
-     [ mkItem ["Home"] ["tiled"] $ inHome "1" (spawn "google-chrome") ]
+     [ mkItem ["Home"] ["tiled"] $ inHome "1" (spawn $ browser <> " --profile-directory=work")
+     , mkItem ["Home"] ["tiled"] $ inHome "2" (spawn $ browser <> " --profile-directory=PM")
+     ]
      <>
-     [ mkItem ["Home"] ["tiled"] (genericTopic i) | i <- map show [2..5 :: Int] ]
+     [ mkItem ["Home"] ["hack"] (genericTopic i) | i <- map show [3..8 :: Int] ]
+     <>
+     [ mkItem ["Home"] ["tiled"] $ inHome "9" (spawn $ browser <> " --profile-directory=personal")]
     where
       genericTopic name = inHome name $ spawnTermInTopic topicConfig
 

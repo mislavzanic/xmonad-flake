@@ -78,9 +78,9 @@ promptKeys conf =
   , ("M1-s", visualSubmap winConf $ searchList $ promptSearch promptTheme)
 
   , ("M-s", visualSubmap winConf . M.fromList $
-      [ ((noModMask, xK_f), ("Fullscreen screenshot", spawn "takeScreenshot.sh Fullscreen"))
-      , ((noModMask, xK_r), ("Region screenshot", spawn "takeScreenshot.sh Region"))
-      , ((noModMask, xK_a), ("Active window screenshot", spawn "takeScreenshot.sh Active Window"))
+      [ ((noModMask, xK_f), ("Fullscreen screenshot", spawn $ screenshotProg <> " Fullscreen"))
+      , ((noModMask, xK_r), ("Region screenshot", spawn $ screenshotProg <> " Region"))
+      , ((noModMask, xK_a), ("Active window screenshot", spawn $ screenshotProg <> " Active Window"))
       ])
   , ("M-o", visualSubmap winConf . M.fromList $
       [ ((noModMask, xK_h), ("Cro", chLang "hr"))
@@ -89,9 +89,11 @@ promptKeys conf =
   ]
   where
    chLang :: String -> X()
-   chLang lang = spawn ("setxkbmap " <> lang) >> spawn ("xmodmap " <> userConfDir conf <> "/x11/Xmodmap")
+   chLang lang = spawn ("setxkbmap " <> lang <> " && xmodmap " <> userConfDir conf <> "/x11/Xmodmap &") -- >> spawn ("xmodmap " <> userConfDir conf <> "/x11/Xmodmap")
 
    winConf = winConfig conf
+
+   screenshotProg = userConfDir conf <> "/xmonad/" <> "takeScreenshot.sh"
 
    promptTheme :: XPConfig
    promptTheme = userPromptConfig conf
