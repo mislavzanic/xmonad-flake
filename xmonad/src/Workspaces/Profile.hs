@@ -9,7 +9,6 @@ import XMonad.Actions.TopicSpace
 import Workspaces.Topics
 import XMonad.Prompt (XPConfig, XPrompt (showXPrompt), mkComplFunFromList', mkXPrompt)
 import Data.Foldable
-import Data.List (groupBy, sortBy)
 import XMonad.Actions.PerProfileWindows (hideBeforeSwitch, showAfterSwitch)
 import XMonad.Util.UserConf (UserConf (userPromptConfig, userTopicConfig, userTopics))
 import XMonad.Util.PTL
@@ -34,7 +33,7 @@ topicKeys conf =
   , ("M-<Return>", spawnTermInTopic tc)
   ] ++
   [ ("M-" ++ m ++ k, bindOn $ map (\x -> (head $ pId x, f $ (tiName . topicItem) x)) i)
-  | (i, k) <- groups
+  | (i, k) <- bindProfileWSKeys $ userTopics conf
   , (f, m) <- [(mby $ goto tc, ""), (mby $ windows . W.shift, "S-")]
   ]
   where
@@ -42,15 +41,6 @@ topicKeys conf =
     tc = userTopicConfig conf
 
     promptTheme = userPromptConfig conf
-
-    groups :: [([ProfileTopicLayout], String)]
-    groups = map (\p -> (map fst p, snd . head $ p))
-           . sortGroupBy snd
-           . concatMap (\x -> zip (x <> repeat (mkPTL (pId $ head x) [] $ TI "" "" $ return ()))  (map show [1..9 :: Int]))
-           . sortGroupBy (head . pId)
-           . concatMap (\p -> map (\pid -> mkPTL [pid] (layouts p) $ topicItem p) $ pId p) $ userTopics conf
-
-    sortGroupBy f = groupBy (\x y -> f x == f y) . sortBy (\x y -> compare (f x) (f y))
 
 toggleLastProfile :: X()
 toggleLastProfile = previousProfile >>= (`forM_` switchToProfile)
