@@ -55,7 +55,7 @@ instance Default UserConf where
                  , userSpacingWidth   = 2
                  , userModMask        = mod1Mask
                  , userDefaultProfile = "Home"
-                 , userTopics         = [ genericTopic i | i <- map show [1..9 :: Integer]]
+                 , userTopics         = [genericTopic i | i <- map show [1..9 :: Integer]]
                  , userTopicConfig    = def
                  , userPromptConfig   = defaultPromptTheme
                  }

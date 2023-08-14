@@ -19,6 +19,8 @@ module XMonad.Actions.Profiles
   ( ProfileId
   , Profile(..)
   , addProfiles
+  , addProfilesWithHistory
+  , addProfilesWithHistoryExclude
   , currentProfile
   , previousProfile
   , profileHistory
@@ -95,19 +97,43 @@ profileHistory = XS.gets history
 addProfiles :: [Profile] -> ProfileId -> XConfig a -> XConfig a
 addProfiles pfs dp conf = addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
   { startupHook = profilesStartupHook pfs dp <> startupHook conf
+  }
+
+addProfilesWithHistory :: [Profile] -> ProfileId -> XConfig a -> XConfig a
+addProfilesWithHistory pfs dp conf = addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+  { startupHook = profilesStartupHook pfs dp <> startupHook conf
   , logHook = profileHistoryHook <> logHook conf
   }
 
+addProfilesWithHistoryExclude :: [Profile] -> ProfileId -> [WorkspaceId] -> XConfig a -> XConfig a
+addProfilesWithHistoryExclude pfs dp ws conf = addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+  { startupHook = profilesStartupHook pfs dp <> startupHook conf
+  , logHook = profileHistoryHookExclude ws <> logHook conf
+  }
+
 profileHistoryHook :: X()
-profileHistoryHook = do
+profileHistoryHook = profileHistoryHookExclude []
+
+profileHistoryHookExclude :: [WorkspaceId] -> X()
+profileHistoryHookExclude ews = do
   cur <- gets $ W.current . windowset
   vis <- gets $ W.visible . windowset
   pws <- currentProfileWorkspaces
   p <- currentProfile
 
-  updateHist p $ workspaceScreenPairs $ filter ((`elem` pws) . W.tag . W.workspace) $ cur:vis
+  updateHist p $ workspaceScreenPairs $ filter (filterWS pws) $ cur:vis
   where
     workspaceScreenPairs wins = zip (W.screen <$> wins) (W.tag . W.workspace <$> wins)
+    filterWS pws = (\wid -> (wid `elem` pws) && (wid `notElem` ews)) . W.tag . W.workspace
+
+updateHist :: ProfileId -> [(ScreenId, WorkspaceId)] -> X()
+updateHist pid xs = XS.modify' update
+  where
+    update hs = force $ hs { history = doUpdate $ history hs }
+    doUpdate hist = foldl (\acc (sid, wid) -> Map.alter (f sid wid) pid acc) hist xs
+    f sid wid val = case val of
+      Nothing -> pure [(sid, wid)]
+      Just hs -> pure $ let new = (sid, wid) in new: delete new hs
 
 profilesStartupHook :: [Profile] -> ProfileId -> X ()
 profilesStartupHook ps pid = XS.modify go >> switchWSOnScreens pid
@@ -125,15 +151,6 @@ profilesStartupHook ps pid = XS.modify go >> switchWSOnScreens pid
     setCurrentProfile s = case Map.lookup pid s of
       Nothing -> Just $ Profile pid []
       Just pn -> Just pn
-
-updateHist :: ProfileId -> [(ScreenId, WorkspaceId)] -> X()
-updateHist pid xs = XS.modify' update
-  where
-    update hs = force $ hs { history = doUpdate $ history hs }
-    doUpdate hist = foldl (\acc (sid, wid) -> Map.alter (f sid wid) pid acc) hist xs
-    f sid wid val = case val of
-      Nothing -> pure [(sid, wid)]
-      Just hs -> pure $ let new = (sid, wid) in new: delete new hs
 
 setPrevious :: ProfileId -> X()
 setPrevious name = XS.modify update
@@ -226,7 +243,6 @@ profileLogger formatFocused formatUnfocused = do
 
 allProfileWindows :: XWindowMap
 allProfileWindows = allProfileWindows' def
-
 
 allProfileWindows' :: WindowBringerConfig -> XWindowMap
 allProfileWindows' WindowBringerConfig{ windowTitler = titler, windowFilter = include } = do

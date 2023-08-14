@@ -89,7 +89,7 @@ promptKeys conf =
   ]
   where
    chLang :: String -> X()
-   chLang lang = spawn ("setxkbmap " <> lang <> " && xmodmap " <> userConfDir conf <> "/x11/Xmodmap &") -- >> spawn ("xmodmap " <> userConfDir conf <> "/x11/Xmodmap")
+   chLang lang = spawn ("setxkbmap " <> lang <> " && xmodmap " <> userConfDir conf <> "/x11/Xmodmap &")
 
    winConf = winConfig conf
 
@@ -131,7 +131,6 @@ appKeys :: UserConf -> [(String, X ())]
 appKeys conf =
   [ ("M-q", kill)
   , ("M-C-q", withUnfocused killWindow)
-  -- , ("M-S-r", spawn "xmonad --restart")
 
   , ("<XF86AudioRaiseVolume>", spawn "pamixer -i 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")
   , ("<XF86AudioLowerVolume>", spawn "pamixer -d 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")

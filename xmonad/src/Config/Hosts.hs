@@ -76,7 +76,7 @@ baseConfig = usePrefixArgument "M-u"
       
 
 hostConfig hostname = dynamicEasySBs ( pure . barSpawner hostname )
-  . addProfiles (profiles myConf) (userDefaultProfile myConf)
+  . addProfilesWithHistoryExclude (profiles myConf) (userDefaultProfile myConf) [scratchpadWorkspaceTag]
   $ baseConfig
   { workspaces  = map (tiName . topicItem) $ userTopics myConf
   , layoutHook  = lessBorders OnlyScreenFloat $ myLayout myConf
