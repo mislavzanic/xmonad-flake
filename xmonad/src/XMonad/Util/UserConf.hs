@@ -22,11 +22,7 @@ import XMonad.Actions.TopicSpace
 import XMonad.Prompt (XPConfig)
 import Config.Prompts (defaultPromptTheme)
 
-data ProfileItem = ProfileItem
-  { topicItem :: !TopicItem
-  , pId       :: ![ProfileId]
-  , layouts   :: [String]
-  }
+import XMonad.Util.PTL
 
 data UserConf = UserConf
   { userConfDir        :: String
@@ -39,7 +35,7 @@ data UserConf = UserConf
   , userSpacingWidth   :: Integer
   , userModMask        :: KeyMask
   , userDefaultProfile :: String
-  , userTopics         :: [ProfileItem]
+  , userTopics         :: [ProfileTopicLayout]
   , userTopicConfig    :: TopicConfig
   , userPromptConfig   :: XPConfig
   }
@@ -60,7 +56,4 @@ instance Default UserConf where
                  , userPromptConfig   = defaultPromptTheme
                  }
                  where
-                  genericTopic name = mkItem ["Home"] ["tiled"] $ TI name "~" $ return ()
-
-mkItem :: [ProfileId] -> [String] -> TopicItem -> ProfileItem
-mkItem pids ls ti = ProfileItem ti pids ls
+                  genericTopic name = mkPTL ["Home"] ["tiled"] $ TI name "~" $ return ()

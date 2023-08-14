@@ -20,6 +20,7 @@ import XMonad.Prompt
 import XMonad.Util.UserConf
 import XMonad.Actions.TopicSpace hiding ( switchNthLastFocusedByScreen, workspaceHistoryByScreen )
 import Workspaces.Topics
+import XMonad.Util.PTL
 import Config.Prompts (defaultPromptTheme)
 
 userConf :: UserConf
@@ -44,15 +45,15 @@ userConf = def
 
    browser = "google-chrome"
 
-   home :: [ProfileItem]
+   home :: [ProfileTopicLayout]
    home =
-     [ mkItem ["Home"] ["tiled"] $ inHome "1" (spawn $ browser <> " --profile-directory=work")
-     , mkItem ["Home"] ["tiled"] $ inHome "2" (spawn $ browser <> " --profile-directory=PM")
+     [ mkPTL ["Home"] ["tiled"] $ inHome "1" (spawn $ browser <> " --profile-directory=work")
+     , mkPTL ["Home"] ["tiled"] $ inHome "2" (spawn $ browser <> " --profile-directory=PM")
      ]
      <>
-     [ mkItem ["Home"] ["hack"] (genericTopic i) | i <- map show [3..8 :: Int] ]
+     [ mkPTL ["Home"] ["hack"] (genericTopic i) | i <- map show [3..8 :: Int] ]
      <>
-     [ mkItem ["Home"] ["tiled"] $ inHome "9" (spawn $ browser <> " --profile-directory=personal")]
+     [ mkPTL ["Home"] ["tiled"] $ inHome "9" (spawn $ browser <> " --profile-directory=personal")]
     where
       genericTopic name = inHome name $ spawnTermInTopic topicConfig
 

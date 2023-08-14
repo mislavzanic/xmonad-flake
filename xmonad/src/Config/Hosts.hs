@@ -1,7 +1,5 @@
 module Config.Hosts where
 
-import Workspaces.Topics ( ProfileItem (topicItem) )
-
 import Config.Bar ( barSpawner )
 import Config.Keys ( myKeys )
 
@@ -48,8 +46,8 @@ import XMonad.Actions.Profiles
 import Workspaces.Profile
 import XMonad.Actions.PerProfileWindows (hiddenWSLogHook)
 import XMonad.Util.UserConf (UserConf(userBorderWidth, userTerminal, userModMask, userTopics, userDefaultProfile))
-import XMonad (XConfig(layoutHook))
--- import XMonad.Layout.Decoration
+import XMonad.Util.PTL
+
 
 -- baseConfig :: (ModifiedLayout l) => XConfig l
 baseConfig = usePrefixArgument "M-u"
@@ -65,7 +63,7 @@ baseConfig = usePrefixArgument "M-u"
       { manageHook         = ( isFullscreen --> doFullFloat ) <+> manageDocks <+> myManageHook <+> manageHook desktopConfig
       , startupHook        = myStartupHook
       , handleEventHook    = handleEventHook desktopConfig <+> trayerAboveXmobarEventHook <+> myHandleEventHook
-      , workspaces         = map show [1..9]
+      , workspaces         = map show [1..9 :: Int]
       , normalBorderColor  = "#333333"
       , focusedBorderColor = base01
       , logHook            = hiddenWSLogHook
@@ -88,5 +86,3 @@ hostConfig hostname = dynamicEasySBs ( pure . barSpawner hostname )
    myConf = case hostname of
      "mzanic" -> Mzanic.userConf
      _        -> Default.userConf
-
-

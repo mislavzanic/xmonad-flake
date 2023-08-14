@@ -20,6 +20,7 @@ import XMonad.Prompt
 import XMonad.Util.UserConf
 import XMonad.Actions.TopicSpace hiding ( switchNthLastFocusedByScreen, workspaceHistoryByScreen )
 import Workspaces.Topics
+import XMonad.Util.PTL
 import Config.Prompts (defaultPromptTheme)
 
 userConf :: UserConf
@@ -33,7 +34,7 @@ userConf = def
   , userPromptConfig = promptTheme
   }
   where
-    ws :: [ProfileItem]
+    ws :: [ProfileTopicLayout]
     ws = home <> notes
 
     promptTheme :: XPConfig
@@ -53,26 +54,26 @@ userConf = def
       , defaultTopic       = "temp1"
       }
 
-    home :: [ProfileItem]
+    home :: [ProfileTopicLayout]
     home =
-      [ mkItem ["Dev", "Media", "Home"] ["tiled"] $ inHome "web" (spawn "firefox")
-      , mkItem ["Dev"]                  ["hack"]  $ TI "dev" "~/.local/dev" $ spawnEditorInTopic topicConfig
-      , mkItem ["Dev"]                  ["hack"]  $ TI "nix-dev" "~/.local/dev/nix-tinkering" (spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig)
-      , mkItem ["Dev"]                  ["hack"]  $ TI "cp" "~/.local/dev/compprog" $ spawnEditorInTopic topicConfig
-      ] <> map (mkItem ["Media"] ["tiled"])
+      [ mkPTL ["Dev", "Media", "Home"] ["tiled"] $ inHome "web" (spawn "firefox")
+      , mkPTL ["Dev"]                  ["hack"]  $ TI "dev" "~/.local/dev" $ spawnEditorInTopic topicConfig
+      , mkPTL ["Dev"]                  ["hack"]  $ TI "nix-dev" "~/.local/dev/nix-tinkering" (spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig)
+      , mkPTL ["Dev"]                  ["hack"]  $ TI "cp" "~/.local/dev/compprog" $ spawnEditorInTopic topicConfig
+      ] <> map (mkPTL ["Media"] ["tiled"])
       [ inHome "rss" (spawn $ myEditor <> " --eval '(elfeed)'")
       , TI "blog" "~/.local/dev/blog/webContent" $ spawnEditorInTopic topicConfig
       , TI "vid"  "~/.local/torrents" $ spawnTermInTopic topicConfig
       , TI "pdf"  "~/.local/books" $ spawnTermInTopic topicConfig
-      ] <> map (mkItem ["Home"] ["hack"])
+      ] <> map (mkPTL ["Home"] ["hack"])
       [ TI "dots"  "~/.config/.dotfiles"                      $ spawnEditorInTopic topicConfig 
       , TI "xmn"   "~/.local/dev/dots/xmonad-flake/xmonad"    $ spawnEditorInTopic topicConfig
       , TI "emacs" "~/.local/dev/dots/emacs-flake"            $ spawnEditorInTopic topicConfig
       , TI "xmb"   "~/.local/dev/dots/xmonad-flake/xmobar"    $ spawnEditorInTopic topicConfig
       ]
     
-    notes :: [ProfileItem]
-    notes = map (mkItem ["Dev", "Home", "Media"] ["tiled", "hack"])
+    notes :: [ProfileTopicLayout]
+    notes = map (mkPTL ["Dev", "Home", "Media"] ["tiled", "hack"])
       [ TI "notes" "~/.local/notes" $ spawnEditorInTopic topicConfig
       , inHome "temp1" $ spawnTermInTopic topicConfig
       ]

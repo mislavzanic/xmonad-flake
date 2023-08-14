@@ -1,7 +1,5 @@
 module Workspaces.Topics
-  ( ProfileItem(..)
-  , appendToName
-  , mkItem
+  ( appendToName
   , spawnTermInTopic
   , spawnEditorInTopic
   , goto
@@ -20,7 +18,6 @@ import XMonad.Actions.TopicSpace hiding ( switchNthLastFocusedByScreen, workspac
 import XMonad.Prompt
 import qualified XMonad.StackSet as W
 import XMonad.Util.Run
-import XMonad.Util.UserConf
 import qualified Data.Map as Map
 
 appendToName :: ProfileId -> TopicItem -> TopicItem

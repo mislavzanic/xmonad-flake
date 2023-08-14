@@ -29,10 +29,10 @@ import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns ( ThreeCol(ThreeColMid) )
 import XMonad.Layout.PerScreen (ifWider)
 import XMonad.Layout.CenteredIfSingle (centeredIfSingle)
-import Workspaces.Topics (ProfileItem (layouts, topicItem))
 import XMonad.Actions.TopicSpace (TopicItem(tiName))
 import XMonad.Layout.Hidden (hiddenWindows)
 import XMonad.Util.UserConf (UserConf(userTopics, userFontStr))
+import XMonad.Util.PTL
 
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
