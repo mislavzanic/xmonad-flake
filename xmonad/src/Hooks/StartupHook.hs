@@ -23,7 +23,7 @@ myStartupHook = do
   spawn     "killall trayer"
   spawn     ("sleep 2 && trayer -l --edge bottom --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor primary --transparent true --alpha 0 " ++ trayerColor basebg ++ " --height 22 &")
   spawnOnce "xss-lock -- i3lock -n -i ~/.local/share/wallpaper &"
-  spawnOnce "emacs-28.2 --daemon &"
+  spawnOnce "emacs --daemon &"
   spawnOnce "dunst &"
   spawnOnce "nm-applet &"
   spawnOnce "pasystray &"
