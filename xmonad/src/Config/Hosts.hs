@@ -50,8 +50,7 @@ import XMonad.Util.PTL
 
 
 -- baseConfig :: (ModifiedLayout l) => XConfig l
-baseConfig = usePrefixArgument "M-u"
-           . setEwmhActivateHook activateHook
+baseConfig = setEwmhActivateHook activateHook
            . ewmhFullscreen
            . ewmh
            . docks
@@ -73,7 +72,8 @@ baseConfig = usePrefixArgument "M-u"
       }
       
 
-hostConfig hostname = dynamicEasySBs ( pure . barSpawner hostname )
+hostConfig hostname = usePrefixArgument "M-u"
+  . dynamicEasySBs ( pure . barSpawner hostname )
   . addProfilesWithHistoryExclude (profiles myConf) (userDefaultProfile myConf) [scratchpadWorkspaceTag]
   $ baseConfig
   { workspaces  = map (tiName . topicItem) $ userTopics myConf
