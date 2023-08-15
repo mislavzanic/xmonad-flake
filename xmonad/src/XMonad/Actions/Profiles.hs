@@ -219,7 +219,7 @@ addCurrentWSToProfile pid = do
   addWSToProfile cur pid
 
 addWSToProfile :: WorkspaceId -> ProfileId -> X()
-addWSToProfile wid pid = XS.modify' go
+addWSToProfile wid pid = XS.modify go
   where
    go :: ProfileState -> ProfileState
    go ps = ps {profiles = update $ profiles ps}
