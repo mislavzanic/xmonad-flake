@@ -197,6 +197,7 @@ profileWorkspaces pid = profileMap >>= findPWs
 addWSToProfilePrompt :: XPConfig -> X()
 addWSToProfilePrompt c = do
   ps <- profileIds
+  cp <- currentProfile
   mkXPrompt (ProfilePrompt "Add ws to profile:") c (mkComplFunFromList' c ps) f
   where
    f :: String -> X()
@@ -207,6 +208,7 @@ addWSToProfilePrompt c = do
      let
        arr = cur:(vis <> hid)
        in mkXPrompt (ProfilePrompt "Ws to add to profile:") c (mkComplFunFromList' c arr) (`addWSToProfile` p)
+     
 
 addCurrentWSToProfilePrompt :: XPConfig -> X()
 addCurrentWSToProfilePrompt c = do
@@ -222,7 +224,7 @@ addWSToProfile :: WorkspaceId -> ProfileId -> X()
 addWSToProfile wid pid = XS.modify go
   where
    go :: ProfileState -> ProfileState
-   go ps = ps {profiles = update $ profiles ps}
+   go ps = ps {profiles = update $ profiles ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
 
    update :: ProfileMap -> ProfileMap
    update mp = case Map.lookup pid mp of
@@ -231,6 +233,9 @@ addWSToProfile wid pid = XS.modify go
 
    f :: Profile -> Profile
    f p = Profile pid (wid : profileWS p) 
+
+   update' :: Profile -> Maybe Profile
+   update' cp = if profileId cp == pid && wid `notElem` profileWS cp then Just (Profile pid $ wid:profileWS cp) else Just cp
 
 profileMap :: X ProfileMap
 profileMap = XS.gets profiles
