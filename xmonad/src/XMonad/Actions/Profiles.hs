@@ -21,6 +21,7 @@ module XMonad.Actions.Profiles
   , addProfiles
   , addProfilesWithHistory
   , addProfilesWithHistoryExclude
+  , addCurrentWSToProfilePrompt
   , currentProfile
   , previousProfile
   , profileHistory
@@ -36,6 +37,7 @@ module XMonad.Actions.Profiles
   , bindOn
   , profileLogger
   , setProfile
+  , ProfilePrompt(..)
   )where
 
 import Data.Map.Strict (Map)
@@ -56,6 +58,7 @@ import XMonad.Actions.WindowBringer (WindowBringerConfig(..))
 import XMonad.Actions.OnScreen (greedyViewOnScreen)
 import XMonad.Hooks.Rescreen (addAfterRescreenHook)
 import XMonad.Hooks.DynamicLog (PP(ppRename))
+import XMonad.Prompt 
 
 type ProfileId  = String
 type ProfileMap = Map ProfileId Profile
@@ -83,6 +86,11 @@ newtype ProfileHistory = ProfileHistory
 instance ExtensionClass ProfileHistory where
   extensionType = PersistentExtension
   initialValue = ProfileHistory Map.empty
+
+newtype ProfilePrompt = ProfilePrompt String
+
+instance XPrompt ProfilePrompt where
+  showXPrompt (ProfilePrompt x) = x
 
 currentProfile :: X ProfileId
 currentProfile = profileId . fromMaybe (Profile "default" []) . current <$> XS.get
@@ -184,6 +192,30 @@ profileWorkspaces :: ProfileId -> X [WorkspaceId]
 profileWorkspaces pid = profileMap >>= findPWs
   where
     findPWs pm = return . profileWS . fromMaybe (Profile "default" []) $ Map.lookup pid pm
+
+addCurrentWSToProfilePrompt :: XPConfig -> X()
+addCurrentWSToProfilePrompt c = do
+  ps <- profileIds
+  mkXPrompt (ProfilePrompt "Add to profile:") c (mkComplFunFromList' c ps) addCurrentWSToProfile
+
+addCurrentWSToProfile :: ProfileId -> X()
+addCurrentWSToProfile pid = do
+  cur <- gets $ W.tag . W.workspace . W.current . windowset
+  addWSToProfile cur pid
+
+addWSToProfile :: WorkspaceId -> ProfileId -> X()
+addWSToProfile wid pid = XS.modify' go
+  where
+   go :: ProfileState -> ProfileState
+   go ps = ps {profiles = update $ profiles ps}
+
+   update :: ProfileMap -> ProfileMap
+   update mp = case Map.lookup pid mp of
+     Nothing -> mp
+     Just p  -> if wid `elem` profileWS p then mp else Map.adjust f pid mp
+
+   f :: Profile -> Profile
+   f p = Profile pid (wid : profileWS p) 
 
 profileMap :: X ProfileMap
 profileMap = XS.gets profiles

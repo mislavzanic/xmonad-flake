@@ -72,7 +72,10 @@ scratchpadKeys =
 
 promptKeys :: UserConf -> [(String, X ())]
 promptKeys conf =
-  [ ("M-p",  shellPrompt promptTheme)
+  [ ("M-p", withPrefixArgument $
+              \case Raw 1 -> switchProfilePrompt promptTheme
+                    Raw 2 -> addCurrentWSToProfilePrompt promptTheme
+                    _     -> shellPrompt promptTheme)
   , ("M-[",  windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
   , ("M-]",  windowPrompt promptTheme Bring allProfileWindows)
   , ("M1-s", visualSubmap winConf $ searchList $ promptSearch promptTheme)
@@ -104,8 +107,10 @@ wsKeys conf =
   , ("M1-l",  DO.swapWith Next filterWS)
   , ("M1-j",  DO.moveTo Next filterWS)
   , ("M1-k",  DO.moveTo Prev filterWS)
-  , ("M-C-p", switchProfilePrompt $ userPromptConfig conf)
   , ("M1-`",  toggleLastProfile)
+
+  , ("M-C-p", switchProfilePrompt $ userPromptConfig conf)
+  , ("M-C-o", addCurrentWSToProfilePrompt $ userPromptConfig conf)
   ]
   where
     filterWS = wsFilter :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]

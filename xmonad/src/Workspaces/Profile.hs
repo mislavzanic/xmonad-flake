@@ -52,11 +52,6 @@ toggleLastProfileWithHiding = do
   forM_ pp hideBeforeSwitch >> forM_ pp switchToProfile
   showAfterSwitch cp
 
-newtype ProfilePrompt = ProfilePrompt String
-
-instance XPrompt ProfilePrompt where
-  showXPrompt (ProfilePrompt x) = x
-
 switchProfilePrompt :: XPConfig -> X()
 switchProfilePrompt c = do
   ps <- profileIds
