@@ -74,8 +74,12 @@ promptKeys :: UserConf -> [(String, X ())]
 promptKeys conf =
   [ ("M-p", withPrefixArgument $
               \case Raw 1 -> switchProfilePrompt promptTheme
-                    Raw 2 -> addCurrentWSToProfilePrompt promptTheme
+                    Raw 2 -> addWSToProfilePrompt promptTheme
                     _     -> shellPrompt promptTheme)
+  , ("M-C-p", switchProfilePrompt promptTheme)
+  , ("M-d",  withPrefixArgument $
+               \case Raw 1 -> windowPrompt promptTheme Bring allProfileWindows
+                     _     -> windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
   , ("M-[",  windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
   , ("M-]",  windowPrompt promptTheme Bring allProfileWindows)
   , ("M1-s", visualSubmap winConf $ searchList $ promptSearch promptTheme)
@@ -110,7 +114,6 @@ wsKeys conf =
   , ("M1-`",  toggleLastProfile)
 
   , ("M-C-p", switchProfilePrompt $ userPromptConfig conf)
-  , ("M-C-o", addCurrentWSToProfilePrompt $ userPromptConfig conf)
   ]
   where
     filterWS = wsFilter :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]
@@ -145,12 +148,6 @@ appKeys conf =
   , ("<XF86MonBrightnessUp>",   spawn "brightnessctl s $(($(brightnessctl g) + 50))")
 
   , ("M1-w", spawn $ userBrowser conf)
-
-  , ("M-d", hideAll)
-  , ("M-C-d", showAll)
-
-  , ("M-f", hideFocused)
-  , ("M-C-f", showLastHidden)
 
   , ("M-C-l", spawn $ userLock conf)
   ]

@@ -72,7 +72,7 @@ baseConfig = setEwmhActivateHook activateHook
       }
       
 
-hostConfig hostname = usePrefixArgument "M-u"
+hostConfig hostname = usePrefixArgument "M-f"
   . dynamicEasySBs ( pure . barSpawner hostname )
   . addProfilesWithHistoryExclude (profiles myConf) (userDefaultProfile myConf) [scratchpadWorkspaceTag]
   $ baseConfig

@@ -22,6 +22,7 @@ module XMonad.Actions.Profiles
   , addProfilesWithHistory
   , addProfilesWithHistoryExclude
   , addCurrentWSToProfilePrompt
+  , addWSToProfilePrompt
   , currentProfile
   , previousProfile
   , profileHistory
@@ -192,6 +193,20 @@ profileWorkspaces :: ProfileId -> X [WorkspaceId]
 profileWorkspaces pid = profileMap >>= findPWs
   where
     findPWs pm = return . profileWS . fromMaybe (Profile "default" []) $ Map.lookup pid pm
+
+addWSToProfilePrompt :: XPConfig -> X()
+addWSToProfilePrompt c = do
+  ps <- profileIds
+  mkXPrompt (ProfilePrompt "Add ws to profile:") c (mkComplFunFromList' c ps) f
+  where
+   f :: String -> X()
+   f p = do
+     vis <- gets $ fmap (W.tag . W.workspace) . W.visible . windowset
+     cur <- gets $ W.tag . W.workspace . W.current . windowset
+     hid <- gets $ fmap W.tag . W.hidden . windowset
+     let
+       arr = cur:(vis <> hid)
+       in mkXPrompt (ProfilePrompt "Ws to add to profile:") c (mkComplFunFromList' c arr) (`addWSToProfile` p)
 
 addCurrentWSToProfilePrompt :: XPConfig -> X()
 addCurrentWSToProfilePrompt c = do
