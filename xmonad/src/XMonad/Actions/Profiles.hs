@@ -23,6 +23,7 @@ module XMonad.Actions.Profiles
   , addProfilesWithHistoryExclude
   , addCurrentWSToProfilePrompt
   , addWSToProfilePrompt
+  , removeWSFromProfilePrompt
   , currentProfile
   , previousProfile
   , profileHistory
@@ -42,6 +43,7 @@ module XMonad.Actions.Profiles
   )where
 
 import Data.Map.Strict (Map)
+import Data.List
 import qualified Data.Map.Strict as Map
 
 import Control.DeepSeq
@@ -197,7 +199,6 @@ profileWorkspaces pid = profileMap >>= findPWs
 addWSToProfilePrompt :: XPConfig -> X()
 addWSToProfilePrompt c = do
   ps <- profileIds
-  cp <- currentProfile
   mkXPrompt (ProfilePrompt "Add ws to profile:") c (mkComplFunFromList' c ps) f
   where
    f :: String -> X()
@@ -236,6 +237,33 @@ addWSToProfile wid pid = XS.modify go
 
    update' :: Profile -> Maybe Profile
    update' cp = if profileId cp == pid && wid `notElem` profileWS cp then Just (Profile pid $ wid:profileWS cp) else Just cp
+
+removeWSFromProfilePrompt :: XPConfig -> X()
+removeWSFromProfilePrompt c = do
+  ps <- profileIds
+  mkXPrompt (ProfilePrompt "Remove ws from profile:") c (mkComplFunFromList' c ps) f
+  where
+   f :: String -> X()
+   f p = do
+     arr <- profileWorkspaces p
+     mkXPrompt (ProfilePrompt "Ws to remove from profile:") c (mkComplFunFromList' c arr) (`removeWSFromProfile` p)
+
+removeWSFromProfile :: WorkspaceId -> ProfileId -> X()
+removeWSFromProfile wid pid = XS.modify go
+  where
+   go :: ProfileState -> ProfileState
+   go ps = ps {profiles = update $ profiles ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
+
+   update :: ProfileMap -> ProfileMap
+   update mp = case Map.lookup pid mp of
+     Nothing -> mp
+     Just p  -> if wid `elem` profileWS p then Map.adjust f pid mp else mp
+
+   f :: Profile -> Profile
+   f p = Profile pid (delete wid $ profileWS p) 
+
+   update' :: Profile -> Maybe Profile
+   update' cp = if profileId cp == pid && wid `elem` profileWS cp then Just (Profile pid $ delete wid $ profileWS cp) else Just cp
 
 profileMap :: X ProfileMap
 profileMap = XS.gets profiles

@@ -75,6 +75,7 @@ promptKeys conf =
   [ ("M-p", withPrefixArgument $
               \case Raw 1 -> switchProfilePrompt promptTheme
                     Raw 2 -> addWSToProfilePrompt promptTheme
+                    Raw 3 -> removeWSFromProfilePrompt promptTheme
                     _     -> shellPrompt promptTheme)
   , ("M-C-p", switchProfilePrompt promptTheme)
   , ("M-d",  withPrefixArgument $
