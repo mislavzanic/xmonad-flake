@@ -17,7 +17,6 @@
 module XMonad.Util.UserConf where
 
 import XMonad hiding (terminal, borderWidth, modMask)
-import XMonad.Actions.Profiles
 import XMonad.Actions.TopicSpace
 import XMonad.Prompt (XPConfig)
 import Config.Prompts (defaultPromptTheme)
@@ -51,9 +50,9 @@ instance Default UserConf where
                  , userSpacingWidth   = 2
                  , userModMask        = mod1Mask
                  , userDefaultProfile = "Home"
-                 , userTopics         = [genericTopic i | i <- map show [1..9 :: Integer]]
+                 , userTopics         = [genericTopic i | i <- map show [1..9 :: Int]]
                  , userTopicConfig    = def
                  , userPromptConfig   = defaultPromptTheme
                  }
                  where
-                  genericTopic name = mkPTL ["Home"] ["tiled"] $ TI name "~" $ return ()
+                  genericTopic name = mkPTL ["Home"] ["tiled"] $ inHome name $ return ()

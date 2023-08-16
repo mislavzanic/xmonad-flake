@@ -33,6 +33,7 @@ userConf = def
   , userTopics = home
   , userTopicConfig = topicConfig
   , userPromptConfig = promptTheme
+  , userDefaultProfile = "Work"
   }
   where
    topicConfig :: TopicConfig
@@ -40,20 +41,24 @@ userConf = def
      { topicDirs          = tiDirs    $ map topicItem home
      , topicActions       = tiActions $ map topicItem home
      , defaultTopicAction = const (pure ())
-     , defaultTopic       = "1"
+     , defaultTopic       = "web-g"
      }
 
    browser = "google-chrome"
 
    home :: [ProfileTopicLayout]
    home =
-     [ mkPTL ["Home"] ["tiled"] $ inHome "1" (spawn $ browser <> " --profile-directory=work")
-     , mkPTL ["Home"] ["tiled"] $ inHome "2" (spawn $ browser <> " --profile-directory=PM")
+     [ mkPTL ["Work"] ["tiled"] $ inHome "web-g" (spawn $ browser <> " --profile-directory=work")
+     , mkPTL ["Work"] ["tiled"] $ inHome "web-pm" (spawn $ browser <> " --profile-directory=PM")
      ]
      <>
-     [ mkPTL ["Home"] ["hack"] (genericTopic i) | i <- map show [3..8 :: Int] ]
+     [ mkPTL ["Work"] ["hack"] (genericTopic i) | i <- map show [3..9 :: Int] ]
      <>
-     [ mkPTL ["Home"] ["tiled"] $ inHome "9" (spawn $ browser <> " --profile-directory=personal")]
+     [ mkPTL ["Home"] ["tiled"] $ inHome "web-me" (spawn $ browser <> " --profile-directory=personal")
+     , mkPTL ["Home"] ["hack"] $ TI "dots"       "~/dotfiles"         $ spawnEditorInTopic topicConfig
+     , mkPTL ["Home"] ["hack"]  $ TI "comp-prog" "~/.local/comp-prog" $ spawnEditorInTopic topicConfig
+     , mkPTL ["Home"] ["hack"]  $ TI "dev"       "~/.local/dev"       $ spawnEditorInTopic topicConfig
+     ]
     where
       genericTopic name = inHome name $ spawnTermInTopic topicConfig
 
