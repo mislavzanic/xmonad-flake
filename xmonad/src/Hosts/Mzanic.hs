@@ -55,7 +55,7 @@ userConf = def
      [ mkPTL ["Work"] ["hack"] (genericTopic i) | i <- map show [3..9 :: Int] ]
      <>
      [ mkPTL ["Home"] ["tiled"] $ inHome "web-me" (spawn $ browser <> " --profile-directory=personal")
-     , mkPTL ["Home"] ["hack"] $ TI "dots"       "~/dotfiles"         $ spawnEditorInTopic topicConfig
+     , mkPTL ["Home"] ["hack"]  $ TI "dots"      "~/dotfiles"         $ spawnEditorInTopic topicConfig
      , mkPTL ["Home"] ["hack"]  $ TI "comp-prog" "~/.local/comp-prog" $ spawnEditorInTopic topicConfig
      , mkPTL ["Home"] ["hack"]  $ TI "dev"       "~/.local/dev"       $ spawnEditorInTopic topicConfig
      ]
