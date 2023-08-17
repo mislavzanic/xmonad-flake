@@ -138,13 +138,18 @@ profileHistoryHookExclude ews = do
     filterWS pws = (\wid -> (wid `elem` pws) && (wid `notElem` ews)) . W.tag . W.workspace
 
 updateHist :: ProfileId -> [(ScreenId, WorkspaceId)] -> X()
-updateHist pid xs = XS.modify' update
+updateHist pid xs = profileWorkspaces pid >>= XS.modify' . update
   where
-    update hs = force $ hs { history = doUpdate $ history hs }
-    doUpdate hist = foldl (\acc (sid, wid) -> Map.alter (f sid wid) pid acc) hist xs
-    f sid wid val = case val of
+    update pws hs = force $ hs { history = doUpdate pws $ history hs }
+
+    doUpdate pws hist = foldl (\acc (sid, wid) -> Map.alter (f pws sid wid) pid acc) hist xs
+
+    f pws sid wid val = case val of
       Nothing -> pure [(sid, wid)]
-      Just hs -> pure $ let new = (sid, wid) in new: delete new hs
+      Just hs -> pure $ let new = (sid, wid) in new:filterWS pws new hs
+
+    filterWS :: [WorkspaceId] -> (ScreenId, WorkspaceId) -> [(ScreenId, WorkspaceId)] -> [(ScreenId, WorkspaceId)]
+    filterWS pws entry = filter (\x -> snd x `elem` pws && x /= entry)
 
 profilesStartupHook :: [Profile] -> ProfileId -> X ()
 profilesStartupHook ps pid = XS.modify go >> switchWSOnScreens pid
