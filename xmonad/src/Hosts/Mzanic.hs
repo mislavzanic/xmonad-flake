@@ -48,13 +48,13 @@ userConf = def
 
    home :: [ProfileTopicLayout]
    home =
-     [ mkPTL ["Work"] ["tiled"] $ inHome "web-g" (spawn $ browser <> " --profile-directory=work")
-     , mkPTL ["Work"] ["tiled"] $ inHome "web-pm" (spawn $ browser <> " --profile-directory=PM")
+     [ mkPTL ["Work"] ["tiled"] $ inHome "wwork" (spawn $ browser <> " --profile-directory=work")
+     , mkPTL ["Work"] ["tiled"] $ inHome "wpm" (spawn $ browser <> " --profile-directory=PM")
      ]
      <>
      [ mkPTL ["Work"] ["hack"] (genericTopic i) | i <- map show [3..9 :: Int] ]
      <>
-     [ mkPTL ["Home"] ["tiled"] $ inHome "web-me" (spawn $ browser <> " --profile-directory=personal")
+     [ mkPTL ["Home"] ["tiled"] $ inHome "wme" (spawn $ browser <> " --profile-directory=personal")
      , mkPTL ["Home"] ["hack"]  $ TI "dots"      "~/dotfiles"         $ spawnEditorInTopic topicConfig
      , mkPTL ["Home"] ["hack"]  $ TI "comp-prog" "~/.local/comp-prog" $ spawnEditorInTopic topicConfig
      , mkPTL ["Home"] ["hack"]  $ TI "dev"       "~/.local/dev"       $ spawnEditorInTopic topicConfig
