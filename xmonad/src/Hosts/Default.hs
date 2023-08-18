@@ -56,7 +56,7 @@ userConf = def
 
     home :: [ProfileTopicLayout]
     home =
-      [ mkPTL ["Dev", "Media", "Home"] ["tiled"] $ inHome "web" (spawn "firefox")
+      [ mkPTL ["Dev", "Home"] ["tiled"] $ inHome "web" (spawn "firefox")
       , mkPTL ["Dev"]                  ["hack"]  $ TI "dev" "~/.local/dev" $ spawnEditorInTopic topicConfig
       , mkPTL ["Dev"]                  ["hack"]  $ TI "nix-dev" "~/.local/dev/nix-tinkering" (spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig)
       , mkPTL ["Dev"]                  ["hack"]  $ TI "cp" "~/.local/dev/compprog" $ spawnEditorInTopic topicConfig

@@ -22,7 +22,6 @@ import XMonad.Config.Desktop ( desktopConfig )
 
 -- actions
 import XMonad.Actions.SwapPromote (masterHistoryHook)
-import XMonad.Hooks.WorkspaceHistory
 import XMonad.Actions.TopicSpace (TopicItem (tiName))
 import XMonad.Actions.UpdatePointer (updatePointer)
 
@@ -65,10 +64,7 @@ baseConfig = setEwmhActivateHook activateHook
       , workspaces         = map show [1..9 :: Int]
       , normalBorderColor  = "#333333"
       , focusedBorderColor = base01
-      , logHook            = hiddenWSLogHook
-                             <> workspaceHistoryHookExclude [scratchpadWorkspaceTag]
-                             <> masterHistoryHook
-                             <> updatePointer (0.5, 0.5) (0, 0)
+      , logHook            = hiddenWSLogHook <> masterHistoryHook <> updatePointer (0.5, 0.5) (0, 0)
       }
       
 

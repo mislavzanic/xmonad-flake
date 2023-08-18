@@ -106,18 +106,18 @@ profileHistory = XS.gets history
 
 -- | Hook profiles into XMonad
 addProfiles :: [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfiles pfs dp conf = addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+addProfiles pfs dp conf = conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
   { startupHook = profilesStartupHook pfs dp <> startupHook conf
   }
 
 addProfilesWithHistory :: [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfilesWithHistory pfs dp conf = addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+addProfilesWithHistory pfs dp conf = conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
   { startupHook = profilesStartupHook pfs dp <> startupHook conf
   , logHook = profileHistoryHook <> logHook conf
   }
 
 addProfilesWithHistoryExclude :: [Profile] -> ProfileId -> [WorkspaceId] -> XConfig a -> XConfig a
-addProfilesWithHistoryExclude pfs dp ws conf = addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+addProfilesWithHistoryExclude pfs dp ws conf = conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
   { startupHook = profilesStartupHook pfs dp <> startupHook conf
   , logHook = profileHistoryHookExclude ws <> logHook conf
   }
@@ -288,17 +288,18 @@ switchWSOnScreens pid = do
   hist <- profileHistory
   vis <- gets $ W.visible . windowset
   cur <- gets $ W.current . windowset
+  -- hid <- gets $ W.hidden . windowset
   pws <- profileMap <&> (profileWS . fromMaybe (Profile pid []) . Map.lookup pid)
   case Map.lookup pid hist of
-    Nothing -> switchScreens $ zip (W.screen <$> cur:vis) pws
-    Just xs -> compareAndSwitch (uniq . reverse $ xs) (cur:vis) pws
+    Nothing -> switchScreens $ zip (W.screen <$> (cur:vis)) pws
+    Just xs -> compareAndSwitch (uniq . reverse $ filter ((`elem` pws) . snd) xs) (cur:vis) pws
   where
     uniq = Map.toList . Map.fromList
     viewWS fview sid wid = windows $ fview sid wid
     switchScreens = mapM_ (uncurry $ viewWS greedyViewOnScreen)
-    compareAndSwitch wss wins pws | length wss > length wins  = switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) wss
-                                  | length wss == length wins = switchScreens wss
-                                  | otherwise                 = switchScreens $ wss <> zip (filter (`notElem` map fst wss) $ W.screen <$> wins) (filter (`notElem` map snd wss) pws)
+    compareAndSwitch wss wins pws | length wss > length wins  = (switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) wss) >> spawn "pavucontrol"
+                                  | length wss == length wins = (switchScreens wss) >> spawn "alacritty --command htop"
+                                  | otherwise                 = (switchScreens $ wss <> zip (filter (`notElem` map fst wss) $ W.screen <$> wins) (filter (`notElem` map snd wss) pws)) >> spawn "lxappearance"
 
 chooseAction :: (String -> X ()) -> X ()
 chooseAction f = XS.gets current <&> (profileId . fromMaybe (Profile "default" [])) >>= f
