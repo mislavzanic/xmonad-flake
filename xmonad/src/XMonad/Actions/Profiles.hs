@@ -40,6 +40,7 @@ module XMonad.Actions.Profiles
   , profileLogger
   , setProfile
   , ProfilePrompt(..)
+  , debugInfo
   )where
 
 import Data.Map.Strict (Map)
@@ -149,7 +150,7 @@ updateHist pid xs = profileWorkspaces pid >>= XS.modify' . update
       Just hs -> pure $ let new = (sid, wid) in new:filterWS pws new hs
 
     filterWS :: [WorkspaceId] -> (ScreenId, WorkspaceId) -> [(ScreenId, WorkspaceId)] -> [(ScreenId, WorkspaceId)]
-    filterWS pws entry = filter (\x -> snd x `elem` pws && x /= entry)
+    filterWS pws new = filter (\x -> snd x `elem` pws && x /= new)
 
 profilesStartupHook :: [Profile] -> ProfileId -> X ()
 profilesStartupHook ps pid = XS.modify go >> switchWSOnScreens pid
@@ -288,7 +289,6 @@ switchWSOnScreens pid = do
   hist <- profileHistory
   vis <- gets $ W.visible . windowset
   cur <- gets $ W.current . windowset
-  -- hid <- gets $ W.hidden . windowset
   pws <- profileMap <&> (profileWS . fromMaybe (Profile pid []) . Map.lookup pid)
   case Map.lookup pid hist of
     Nothing -> switchScreens $ zip (W.screen <$> (cur:vis)) pws
@@ -297,9 +297,9 @@ switchWSOnScreens pid = do
     uniq = Map.toList . Map.fromList
     viewWS fview sid wid = windows $ fview sid wid
     switchScreens = mapM_ (uncurry $ viewWS greedyViewOnScreen)
-    compareAndSwitch wss wins pws | length wss > length wins  = (switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) wss) >> spawn "pavucontrol"
-                                  | length wss == length wins = (switchScreens wss) >> spawn "alacritty --command htop"
-                                  | otherwise                 = (switchScreens $ wss <> zip (filter (`notElem` map fst wss) $ W.screen <$> wins) (filter (`notElem` map snd wss) pws)) >> spawn "lxappearance"
+    compareAndSwitch wss wins pws | length wss > length wins  = switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) wss
+                                  | length wss == length wins = switchScreens wss
+                                  | otherwise                 = switchScreens $ wss <> zip (filter (`notElem` map fst wss) $ W.screen <$> wins) (filter (`notElem` map snd wss) pws)
 
 chooseAction :: (String -> X ()) -> X ()
 chooseAction f = XS.gets current <&> (profileId . fromMaybe (Profile "default" [])) >>= f
@@ -338,3 +338,18 @@ allProfileWindows' WindowBringerConfig{ windowTitler = titler, windowFilter = in
    where keyValuePairs ws = let wins = W.integrate' (W.stack ws)
                            in mapM (keyValuePair ws) =<< filterM include wins
          keyValuePair ws w = (, w) <$> titler ws w
+
+debugInfo :: X [String]
+debugInfo = do
+  p <- currentProfile
+  pws <- currentProfileWorkspaces
+  hs <- profileHistory
+  case Map.lookup p hs of
+    Nothing -> return $ txt p pws
+    Just xs -> return $ txt p pws <> ["Profile history: " <> toLines xs]
+  where
+    txt p pws = [ "Profile: " <> p
+                , "Profile Workspaces: " <> foldl (\acc wid -> acc <> wid <> ", ") "" pws
+                ]
+    toLines :: [(ScreenId, WorkspaceId)] -> String
+    toLines = foldl (\acc (sid,wid) -> acc <> "(" <> show sid <> ", " <> wid <> "), ") ""

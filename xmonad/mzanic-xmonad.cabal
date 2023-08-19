@@ -24,6 +24,7 @@ library
                    XMonad.Actions.Profiles
                    XMonad.Actions.PerProfileWindows
                    XMonad.Util.UserConf
+                   XMonad.Util.DebugWindow
                    XMonad.Util.PTL
 
   build-depends:     X11

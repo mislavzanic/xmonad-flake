@@ -32,6 +32,7 @@ import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
 import XMonad.Actions.Minimize (minimizeWindow, withLastMinimized, maximizeWindowAndFocus)
 import XMonad.Actions.PerProfileWindows (hideAll, showAll, hideFocused, showLastHidden, swapWithHidden)
 import XMonad.Util.UserConf
+import XMonad.Util.DebugWindow
 
 type Keybind = (String, X ())
 
@@ -94,6 +95,10 @@ promptKeys conf =
       [ ((noModMask, xK_h), ("Cro", chLang "hr"))
       , ((noModMask, xK_e), ("Eng", chLang "us"))
       ])
+    
+  , ("M-/", withPrefixArgument $
+                \case Raw 1 -> killDebugWindow
+                      _     -> debugInfo >>= createDebugWindow (winConfig' conf))
   ]
   where
    chLang :: String -> X()
@@ -181,5 +186,17 @@ winConfig conf = WindowConfig
                                    , rect_x = 1600
                                    , rect_width = 350
                                    , rect_height = 430
+                                   }
+  }
+
+winConfig' :: UserConf -> WindowConfig
+winConfig' conf = WindowConfig
+  { winBg = basebg
+  , winFg = basefg
+  , winFont = userFontStr conf
+  , winRect = CustomRect Rectangle { rect_y = -40
+                                   , rect_x = -40
+                                   , rect_width = 1000
+                                   , rect_height = 500
                                    }
   }
