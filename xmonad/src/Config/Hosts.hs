@@ -70,7 +70,7 @@ baseConfig = setEwmhActivateHook activateHook
 
 hostConfig hostname = usePrefixArgument "M-f"
   . dynamicEasySBs ( pure . barSpawner hostname )
-  . addProfilesWithHistoryExclude (profiles myConf) (userDefaultProfile myConf) [scratchpadWorkspaceTag]
+  . addProfilesWithHistoryExclude [scratchpadWorkspaceTag] (profiles myConf) (userDefaultProfile myConf)
   $ baseConfig
   { workspaces  = map (tiName . topicItem) $ userTopics myConf
   , layoutHook  = lessBorders OnlyScreenFloat $ myLayout myConf

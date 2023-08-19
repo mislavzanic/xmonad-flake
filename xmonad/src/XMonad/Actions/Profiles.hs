@@ -46,6 +46,7 @@ module XMonad.Actions.Profiles
 import Data.Map.Strict (Map)
 import Data.List
 import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
 
 import Control.DeepSeq
 
@@ -111,20 +112,13 @@ addProfiles pfs dp conf = conf --addAfterRescreenHook (currentProfile >>= switch
   { startupHook = profilesStartupHook pfs dp <> startupHook conf
   }
 
+addProfilesWithHistoryExclude :: [WorkspaceId] -> [Profile] -> ProfileId -> XConfig a -> XConfig a
+addProfilesWithHistoryExclude ws pfs dp conf = addProfiles pfs dp conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+  { logHook = profileHistoryHookExclude ws <> logHook conf
+  }
+
 addProfilesWithHistory :: [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfilesWithHistory pfs dp conf = conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
-  { startupHook = profilesStartupHook pfs dp <> startupHook conf
-  , logHook = profileHistoryHook <> logHook conf
-  }
-
-addProfilesWithHistoryExclude :: [Profile] -> ProfileId -> [WorkspaceId] -> XConfig a -> XConfig a
-addProfilesWithHistoryExclude pfs dp ws conf = conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
-  { startupHook = profilesStartupHook pfs dp <> startupHook conf
-  , logHook = profileHistoryHookExclude ws <> logHook conf
-  }
-
-profileHistoryHook :: X()
-profileHistoryHook = profileHistoryHookExclude []
+addProfilesWithHistory = addProfilesWithHistoryExclude []
 
 profileHistoryHookExclude :: [WorkspaceId] -> X()
 profileHistoryHookExclude ews = do
@@ -133,10 +127,10 @@ profileHistoryHookExclude ews = do
   pws <- currentProfileWorkspaces
   p <- currentProfile
 
-  updateHist p $ workspaceScreenPairs $ filter (filterWS pws) $ cur:vis
+  updateHist p $ workspaceScreenPairs $ filterWS pws $ cur:vis
   where
     workspaceScreenPairs wins = zip (W.screen <$> wins) (W.tag . W.workspace <$> wins)
-    filterWS pws = (\wid -> (wid `elem` pws) && (wid `notElem` ews)) . W.tag . W.workspace
+    filterWS pws = filter ((\wid -> (wid `elem` pws) && (wid `notElem` ews)) . W.tag . W.workspace)
 
 updateHist :: ProfileId -> [(ScreenId, WorkspaceId)] -> X()
 updateHist pid xs = profileWorkspaces pid >>= XS.modify' . update
@@ -292,14 +286,17 @@ switchWSOnScreens pid = do
   pws <- profileMap <&> (profileWS . fromMaybe (Profile pid []) . Map.lookup pid)
   case Map.lookup pid hist of
     Nothing -> switchScreens $ zip (W.screen <$> (cur:vis)) pws
-    Just xs -> compareAndSwitch (uniq . reverse $ filter ((`elem` pws) . snd) xs) (cur:vis) pws
+    Just xs -> compareAndSwitch (f xs) (cur:vis) pws -- (uniq' . reverse $ map snd xs) pws
   where
+    f :: [(ScreenId, WorkspaceId)] -> [(ScreenId, WorkspaceId)]
+    f = map (\(x,y) -> (y,x)) . Map.toList . Map.fromList . map (\(x,y) -> (y,x)) . uniq . reverse 
     uniq = Map.toList . Map.fromList
+    -- uniq' = Set.toList . Set.fromList
     viewWS fview sid wid = windows $ fview sid wid
     switchScreens = mapM_ (uncurry $ viewWS greedyViewOnScreen)
-    compareAndSwitch wss wins pws | length wss > length wins  = switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) wss
-                                  | length wss == length wins = switchScreens wss
-                                  | otherwise                 = switchScreens $ wss <> zip (filter (`notElem` map fst wss) $ W.screen <$> wins) (filter (`notElem` map snd wss) pws)
+    compareAndSwitch hist wins pws | length hist > length wins  = switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) hist
+                                   | length hist == length wins = switchScreens $ zip (W.screen <$> wins) (map snd hist)
+                                   | otherwise                  = switchScreens $ hist <> zip (filter (`notElem` map fst hist) $ W.screen <$> wins) (filter (`notElem` map snd hist) pws)
 
 chooseAction :: (String -> X ()) -> X ()
 chooseAction f = XS.gets current <&> (profileId . fromMaybe (Profile "default" [])) >>= f
