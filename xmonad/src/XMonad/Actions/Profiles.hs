@@ -46,7 +46,6 @@ module XMonad.Actions.Profiles
 import Data.Map.Strict (Map)
 import Data.List
 import qualified Data.Map.Strict as Map
-import qualified Data.Set as Set
 
 import Control.DeepSeq
 
@@ -108,7 +107,7 @@ profileHistory = XS.gets history
 
 -- | Hook profiles into XMonad
 addProfiles :: [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfiles pfs dp conf = conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+addProfiles pfs dp conf = conf
   { startupHook = profilesStartupHook pfs dp <> startupHook conf
   }
 
@@ -289,16 +288,21 @@ switchWSOnScreens pid = do
   pws <- profileMap <&> (profileWS . fromMaybe (Profile pid []) . Map.lookup pid)
   case Map.lookup pid hist of
     Nothing -> switchScreens $ zip (W.screen <$> (cur:vis)) pws
-    Just xs -> compareAndSwitch (f (W.screen <$> cur:vis) xs) (cur:vis) pws -- (uniq' . reverse $ map snd xs) pws
+    Just xs -> compareAndSwitch (f (W.screen <$> cur:vis) xs) (cur:vis) pws
   where
     f :: [ScreenId] -> [(ScreenId, WorkspaceId)] -> [(ScreenId, WorkspaceId)]
-    f wins = map (\(x,y) -> (y,x)) . Map.toList . Map.fromList . map (\(x,y) -> (y,x)) . uniq . reverse . filter ((`elem` wins) . fst)
+    f sids = reorderUniq . reorderUniq . reverse . filter ((`elem` sids) . fst)
+
+    reorderUniq :: (Ord k, Ord v) => [(k,v)] -> [(v,k)]
+    reorderUniq = map (\(x,y) -> (y,x)) . uniq
+
+    uniq :: (Ord k, Ord v) => [(k,v)] -> [(k,v)]
     uniq = Map.toList . Map.fromList
+
     viewWS fview sid wid = windows $ fview sid wid
     switchScreens = mapM_ (uncurry $ viewWS greedyViewOnScreen)
-    compareAndSwitch hist wins pws | length hist > length wins  = switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) hist
-                                   | length hist == length wins = switchScreens hist
-                                   | otherwise                  = switchScreens $ hist <> zip (filter (`notElem` map fst hist) $ W.screen <$> wins) (filter (`notElem` map snd hist) pws)
+    compareAndSwitch hist wins pws | length hist < length wins = switchScreens $ hist <> zip (filter (`notElem` map fst hist) $ W.screen <$> wins) (filter (`notElem` map snd hist) pws)
+                                   | otherwise                 = switchScreens hist
 
 chooseAction :: (String -> X ()) -> X ()
 chooseAction f = XS.gets current <&> (profileId . fromMaybe (Profile "default" [])) >>= f
