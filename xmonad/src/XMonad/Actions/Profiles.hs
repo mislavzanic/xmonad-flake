@@ -291,11 +291,10 @@ switchWSOnScreens pid = do
     f :: [(ScreenId, WorkspaceId)] -> [(ScreenId, WorkspaceId)]
     f = map (\(x,y) -> (y,x)) . Map.toList . Map.fromList . map (\(x,y) -> (y,x)) . uniq . reverse 
     uniq = Map.toList . Map.fromList
-    -- uniq' = Set.toList . Set.fromList
     viewWS fview sid wid = windows $ fview sid wid
     switchScreens = mapM_ (uncurry $ viewWS greedyViewOnScreen)
     compareAndSwitch hist wins pws | length hist > length wins  = switchScreens $ filter ((`elem` (W.screen <$> wins)) . fst) hist
-                                   | length hist == length wins = switchScreens $ zip (W.screen <$> wins) (map snd hist)
+                                   | length hist == length wins = switchScreens hist
                                    | otherwise                  = switchScreens $ hist <> zip (filter (`notElem` map fst hist) $ W.screen <$> wins) (filter (`notElem` map snd hist) pws)
 
 chooseAction :: (String -> X ()) -> X ()
