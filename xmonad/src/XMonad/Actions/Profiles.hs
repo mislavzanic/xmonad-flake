@@ -113,9 +113,12 @@ addProfiles pfs dp conf = conf --addAfterRescreenHook (currentProfile >>= switch
   }
 
 addProfilesWithHistoryExclude :: [WorkspaceId] -> [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfilesWithHistoryExclude ws pfs dp conf = addProfiles pfs dp conf --addAfterRescreenHook (currentProfile >>= switchWSOnScreens) $ conf
+addProfilesWithHistoryExclude ws pfs dp conf = addAfterRescreenHook hook $ conf'
   { logHook = profileHistoryHookExclude ws <> logHook conf
   }
+  where
+   hook = currentProfile >>= switchWSOnScreens
+   conf' = addProfiles pfs dp conf
 
 addProfilesWithHistory :: [Profile] -> ProfileId -> XConfig a -> XConfig a
 addProfilesWithHistory = addProfilesWithHistoryExclude []

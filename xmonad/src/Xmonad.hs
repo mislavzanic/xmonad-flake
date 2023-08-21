@@ -26,7 +26,6 @@ import Prelude
 
 import XMonad
 import Config.Hosts
-import XMonad.Config.Desktop
 
 
 main :: String -> IO ()
