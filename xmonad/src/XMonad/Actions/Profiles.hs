@@ -286,10 +286,10 @@ switchWSOnScreens pid = do
   pws <- profileMap <&> (profileWS . fromMaybe (Profile pid []) . Map.lookup pid)
   case Map.lookup pid hist of
     Nothing -> switchScreens $ zip (W.screen <$> (cur:vis)) pws
-    Just xs -> compareAndSwitch (f xs) (cur:vis) pws -- (uniq' . reverse $ map snd xs) pws
+    Just xs -> compareAndSwitch (f (W.screen <$> cur:vis) xs) (cur:vis) pws -- (uniq' . reverse $ map snd xs) pws
   where
-    f :: [(ScreenId, WorkspaceId)] -> [(ScreenId, WorkspaceId)]
-    f = map (\(x,y) -> (y,x)) . Map.toList . Map.fromList . map (\(x,y) -> (y,x)) . uniq . reverse 
+    f :: [ScreenId] -> [(ScreenId, WorkspaceId)] -> [(ScreenId, WorkspaceId)]
+    f wins = map (\(x,y) -> (y,x)) . Map.toList . Map.fromList . map (\(x,y) -> (y,x)) . uniq . reverse . filter ((`elem` wins) . fst)
     uniq = Map.toList . Map.fromList
     viewWS fview sid wid = windows $ fview sid wid
     switchScreens = mapM_ (uncurry $ viewWS greedyViewOnScreen)
