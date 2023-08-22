@@ -43,8 +43,6 @@ setName n = renamed [Replace n]
 rTall :: Int -> Rational -> Rational -> ResizableTall l
 rTall m r c = ResizableTall m r c []
 
--- napraviti profile kao LayoutModifiers -> koristiti modWorkspaces iz PerWorkspace modula
--- filtriranje postaje ez-pez
 myLayout conf = onWorkspace "vid" full lh
   where
     lh = layoutOpts

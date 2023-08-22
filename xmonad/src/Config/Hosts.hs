@@ -42,13 +42,12 @@ import XMonad.Hooks.StatusBar ( dynamicEasySBs )
 import XMonad.Actions.Prefix (usePrefixArgument)
 import XMonad.Util.Hacks (trayerAboveXmobarEventHook)
 import XMonad.Actions.Profiles
-import Workspaces.Profile
+import qualified Workspaces.Profile as WP
 import XMonad.Actions.PerProfileWindows (hiddenWSLogHook)
 import XMonad.Util.UserConf (UserConf(userBorderWidth, userTerminal, userModMask, userTopics, userDefaultProfile))
 import XMonad.Util.PTL
 
 
--- baseConfig :: (ModifiedLayout l) => XConfig l
 baseConfig = setEwmhActivateHook activateHook
            . ewmhFullscreen
            . ewmh
@@ -70,7 +69,11 @@ baseConfig = setEwmhActivateHook activateHook
 
 hostConfig hostname = usePrefixArgument "M-f"
   . dynamicEasySBs ( pure . barSpawner hostname )
-  . addProfilesWithHistoryExclude [scratchpadWorkspaceTag] (profiles myConf) (userDefaultProfile myConf)
+  . addProfilesWithHistory def
+                           { workspaceExcludes = [scratchpadWorkspaceTag]
+                           , profiles          = WP.profiles myConf
+                           , defaultProfile    = userDefaultProfile myConf
+                           }
   $ baseConfig
   { workspaces  = map (tiName . topicItem) $ userTopics myConf
   , layoutHook  = lessBorders OnlyScreenFloat $ myLayout myConf

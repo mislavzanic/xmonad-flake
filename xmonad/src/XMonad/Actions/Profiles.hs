@@ -18,9 +18,10 @@
 module XMonad.Actions.Profiles
   ( ProfileId
   , Profile(..)
+  , ProfilePrompt(..)
+  , ProfileConfig(..)
   , addProfiles
   , addProfilesWithHistory
-  , addProfilesWithHistoryExclude
   , addCurrentWSToProfilePrompt
   , addWSToProfilePrompt
   , removeWSFromProfilePrompt
@@ -39,7 +40,6 @@ module XMonad.Actions.Profiles
   , bindOn
   , profileLogger
   , setProfile
-  , ProfilePrompt(..)
   , debugInfo
   )where
 
@@ -73,10 +73,22 @@ data Profile = Profile
   }
 
 data ProfileState = ProfileState
-  { profiles :: !ProfileMap
-  , current  :: !(Maybe Profile)
-  , previous :: !(Maybe ProfileId)
+  { profilesMap :: !ProfileMap
+  , current     :: !(Maybe Profile)
+  , previous    :: !(Maybe ProfileId)
   }
+
+data ProfileConfig = ProfileConfig
+  { workspaceExcludes :: ![WorkspaceId]
+  , profiles          :: ![Profile]
+  , defaultProfile    :: !ProfileId
+  }
+
+instance Default ProfileConfig where
+  def            = ProfileConfig { workspaceExcludes = []
+                                 , profiles = []
+                                 , defaultProfile = "default"
+                                 }
 
 instance ExtensionClass ProfileState where
   initialValue = ProfileState Map.empty Nothing Nothing
@@ -106,21 +118,22 @@ profileHistory :: X (Map ProfileId [(ScreenId, WorkspaceId)])
 profileHistory = XS.gets history
 
 -- | Hook profiles into XMonad
-addProfiles :: [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfiles pfs dp conf = conf
-  { startupHook = profilesStartupHook pfs dp <> startupHook conf
+-- addProfiles :: [Profile] -> ProfileId -> XConfig a -> XConfig a
+addProfiles :: ProfileConfig -> XConfig a -> XConfig a
+addProfiles profConf conf = conf
+  { startupHook = profileStartupHook' <> startupHook conf
   }
+ where
+   profileStartupHook' :: X()
+   profileStartupHook' = profilesStartupHook (profiles profConf) (defaultProfile profConf)
 
-addProfilesWithHistoryExclude :: [WorkspaceId] -> [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfilesWithHistoryExclude ws pfs dp conf = addAfterRescreenHook hook $ conf'
-  { logHook = profileHistoryHookExclude ws <> logHook conf
+addProfilesWithHistory :: ProfileConfig -> XConfig a -> XConfig a
+addProfilesWithHistory profConf conf = addAfterRescreenHook hook $ conf'
+  { logHook = profileHistoryHookExclude (workspaceExcludes profConf) <> logHook conf
   }
   where
    hook = currentProfile >>= switchWSOnScreens
-   conf' = addProfiles pfs dp conf
-
-addProfilesWithHistory :: [Profile] -> ProfileId -> XConfig a -> XConfig a
-addProfilesWithHistory = addProfilesWithHistoryExclude []
+   conf' = addProfiles profConf conf
 
 profileHistoryHookExclude :: [WorkspaceId] -> X()
 profileHistoryHookExclude ews = do
@@ -152,7 +165,7 @@ profilesStartupHook :: [Profile] -> ProfileId -> X ()
 profilesStartupHook ps pid = XS.modify go >> switchWSOnScreens pid
   where
     go :: ProfileState -> ProfileState
-    go s = s {profiles = update $ profiles s, current = setCurrentProfile $ Map.fromList $ map entry ps}
+    go s = s {profilesMap = update $ profilesMap s, current = setCurrentProfile $ Map.fromList $ map entry ps}
 
     update :: ProfileMap -> ProfileMap
     update = Map.union (Map.fromList $ map entry ps)
@@ -169,7 +182,7 @@ setPrevious :: ProfileId -> X()
 setPrevious name = XS.modify update
   where
     update ps = ps { previous = doUpdate ps }
-    doUpdate ps = case Map.lookup name $ profiles ps of
+    doUpdate ps = case Map.lookup name $ profilesMap ps of
       Nothing -> previous ps
       Just p -> Just $ profileId p
 
@@ -180,12 +193,12 @@ setProfile' :: ProfileId -> X ()
 setProfile' name = XS.modify update
   where
     update ps = ps { current = doUpdate ps }
-    doUpdate ps = case Map.lookup name $ profiles ps of
+    doUpdate ps = case Map.lookup name $ profilesMap ps of
       Nothing -> current ps
       Just p -> Just p
 
 profileIds :: X [ProfileId]
-profileIds = Map.keys <$> XS.gets profiles
+profileIds = Map.keys <$> XS.gets profilesMap
 
 switchToProfile :: ProfileId -> X()
 switchToProfile pid = setProfile pid >> switchWSOnScreens pid
@@ -227,7 +240,7 @@ addWSToProfile :: WorkspaceId -> ProfileId -> X()
 addWSToProfile wid pid = XS.modify go
   where
    go :: ProfileState -> ProfileState
-   go ps = ps {profiles = update $ profiles ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
+   go ps = ps {profilesMap = update $ profilesMap ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
 
    update :: ProfileMap -> ProfileMap
    update mp = case Map.lookup pid mp of
@@ -254,7 +267,7 @@ removeWSFromProfile :: WorkspaceId -> ProfileId -> X()
 removeWSFromProfile wid pid = XS.modify go
   where
    go :: ProfileState -> ProfileState
-   go ps = ps {profiles = update $ profiles ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
+   go ps = ps {profilesMap = update $ profilesMap ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
 
    update :: ProfileMap -> ProfileMap
    update mp = case Map.lookup pid mp of
@@ -268,7 +281,7 @@ removeWSFromProfile wid pid = XS.modify go
    update' cp = if profileId cp == pid && wid `elem` profileWS cp then Just (Profile pid $ delete wid $ profileWS cp) else Just cp
 
 profileMap :: X ProfileMap
-profileMap = XS.gets profiles
+profileMap = XS.gets profilesMap
 
 excludeWSPP :: PP -> X PP
 excludeWSPP pp = modifyPP <$> currentProfileWorkspaces
