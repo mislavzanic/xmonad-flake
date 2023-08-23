@@ -1,5 +1,5 @@
-{-# LANGUAGE TupleSections   #-}
-{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE DerivingVia   #-}
 
 
 -----------------------------------------------------------------------------
@@ -117,8 +117,16 @@ previousProfile = XS.gets previous
 profileHistory :: X (Map ProfileId [(ScreenId, WorkspaceId)])
 profileHistory = XS.gets history
 
+profileMap :: X ProfileMap
+profileMap = XS.gets profilesMap
+
+profileIds :: X [ProfileId]
+profileIds = Map.keys <$> XS.gets profilesMap
+
+currentProfileWorkspaces :: X [WorkspaceId]
+currentProfileWorkspaces = XS.gets current <&> profileWS . fromMaybe (Profile "default" [])
+
 -- | Hook profiles into XMonad
--- addProfiles :: [Profile] -> ProfileId -> XConfig a -> XConfig a
 addProfiles :: ProfileConfig -> XConfig a -> XConfig a
 addProfiles profConf conf = conf
   { startupHook = profileStartupHook' <> startupHook conf
@@ -197,14 +205,8 @@ setProfile' name = XS.modify update
       Nothing -> current ps
       Just p -> Just p
 
-profileIds :: X [ProfileId]
-profileIds = Map.keys <$> XS.gets profilesMap
-
 switchToProfile :: ProfileId -> X()
 switchToProfile pid = setProfile pid >> switchWSOnScreens pid
-
-currentProfileWorkspaces :: X [WorkspaceId]
-currentProfileWorkspaces = XS.gets current <&> profileWS . fromMaybe (Profile "default" [])
 
 profileWorkspaces :: ProfileId -> X [WorkspaceId]
 profileWorkspaces pid = profileMap >>= findPWs
@@ -225,7 +227,6 @@ addWSToProfilePrompt c = do
        arr = cur:(vis <> hid)
        in mkXPrompt (ProfilePrompt "Ws to add to profile:") c (mkComplFunFromList' c arr) (`addWSToProfile` p)
      
-
 addCurrentWSToProfilePrompt :: XPConfig -> X()
 addCurrentWSToProfilePrompt c = do
   ps <- profileIds
@@ -280,9 +281,6 @@ removeWSFromProfile wid pid = XS.modify go
    update' :: Profile -> Maybe Profile
    update' cp = if profileId cp == pid && wid `elem` profileWS cp then Just (Profile pid $ delete wid $ profileWS cp) else Just cp
 
-profileMap :: X ProfileMap
-profileMap = XS.gets profilesMap
-
 excludeWSPP :: PP -> X PP
 excludeWSPP pp = modifyPP <$> currentProfileWorkspaces
   where
@@ -293,6 +291,9 @@ excludeWSPP pp = modifyPP <$> currentProfileWorkspaces
 wsFilter :: WSType
 wsFilter = WSIs $ currentProfileWorkspaces >>= (\ws -> return $ (`elem` ws) . W.tag)
 
+-- | Takes care of placing correct workspaces on their respective screens.
+-- It does this by reducing the history of a Profile until it gets an array of length
+-- equal to the number of screens with pairs that have unique workspace ids.
 switchWSOnScreens :: ProfileId -> X()
 switchWSOnScreens pid = do
   hist <- profileHistory
