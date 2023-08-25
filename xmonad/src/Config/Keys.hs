@@ -1,5 +1,3 @@
--- |
-
 module Config.Keys where
 
 import Workspaces.Profile
@@ -32,7 +30,6 @@ import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
 import XMonad.Actions.Minimize (minimizeWindow, withLastMinimized, maximizeWindowAndFocus)
 import XMonad.Actions.PerProfileWindows (hideAll, showAll, hideFocused, showLastHidden, swapWithHidden)
 import XMonad.Util.UserConf
-import XMonad.Util.DebugWindow
 
 type Keybind = (String, X ())
 
@@ -60,8 +57,9 @@ windowsKeys =
   , ("M-h", sendMessage Shrink)
   , ("M-l", sendMessage Expand)
 
-  , ("M-;"   , withFocused $ sendMessage . mergeDir id)
-  , ("M-C-;" , withFocused (sendMessage . UnMerge) *> windows W.focusUp)
+  , ("M-;", withPrefixArgument $
+              \case Raw 1 -> withFocused (sendMessage . UnMerge) *> windows W.focusUp
+                    _     -> withFocused $ sendMessage . mergeDir id)
   ]
 
 scratchpadKeys :: [(String, X ())]
@@ -95,10 +93,6 @@ promptKeys conf =
       [ ((noModMask, xK_h), ("Cro", chLang "hr"))
       , ((noModMask, xK_e), ("Eng", chLang "us"))
       ])
-    
-  , ("M-/", withPrefixArgument $
-                \case Raw 1 -> killDebugWindow
-                      _     -> debugInfo >>= createDebugWindow (winConfig' conf))
   ]
   where
    chLang :: String -> X()

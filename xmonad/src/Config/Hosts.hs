@@ -72,7 +72,7 @@ hostConfig hostname = usePrefixArgument "M-f"
   . addProfilesWithHistory def
                            { workspaceExcludes = [scratchpadWorkspaceTag]
                            , profiles          = WP.profiles myConf
-                           , defaultProfile    = userDefaultProfile myConf
+                           , startingProfile   = userDefaultProfile myConf
                            }
   $ baseConfig
   { workspaces  = map (tiName . topicItem) $ userTopics myConf
