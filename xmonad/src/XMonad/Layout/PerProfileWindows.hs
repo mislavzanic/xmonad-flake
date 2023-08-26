@@ -9,7 +9,7 @@ import qualified Data.Map.Strict as Map
 import XMonad
 import XMonad.Layout.LayoutModifier
 import qualified XMonad.StackSet as W
-
+import XMonad.Util.XUtils
 import XMonad.Actions.Profiles
 
 newtype ProfileWindowMap a = ProfileWindowMap (Map (ProfileId, WorkspaceId) [Window]) deriving (Show, Read)
@@ -53,6 +53,8 @@ markWindowMsg :: ProfileWindowMap a -> Window -> X (Maybe (ProfileWindowMap a))
 markWindowMsg (ProfileWindowMap pMap) win = do
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
+  sc 0xd98107 win
+  -- sc 0xf28933 win
   return . Just . ProfileWindowMap $ update (p,cur)
   where
    update :: (ProfileId, WorkspaceId) -> Map (ProfileId, WorkspaceId) [Window]
@@ -67,6 +69,7 @@ unMarkWindowMsg :: ProfileWindowMap a -> Window -> X (Maybe (ProfileWindowMap a)
 unMarkWindowMsg (ProfileWindowMap pMap) win = do
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
+  sc 0xff8059 win
   return . Just . ProfileWindowMap $ update (p,cur)
   where
    update :: (ProfileId, WorkspaceId) -> Map (ProfileId, WorkspaceId) [Window]
@@ -105,5 +108,7 @@ popMarkedMsg (ProfileWindowMap pMap) = do
 
    getWindows pid wid = fromMaybe [] $ Map.lookup (pid,wid) pMap
 
--- toggleMarkedMsg :: ProfileWindowMap a -> X (Maybe (ProfileWindowMap a))
--- toggleMarkedMsg (ProfileWindowMap pMap) = k
+sc :: Pixel -> Window -> X ()
+sc c win = withDisplay $ \dpy -> do
+  colorName <- io (pixelToString dpy c)
+  setWindowBorderWithFallback dpy win colorName c
