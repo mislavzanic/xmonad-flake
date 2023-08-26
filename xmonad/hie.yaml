@@ -33,6 +33,9 @@ cradle:
     - path: "src/XMonad/Actions"
       component: "lib:mzanic-xmonad"
 
+    - path: "src/XMonad/Layout"
+      component: "lib:mzanic-xmonad"
+
     - path: "src/XMonad/Util"
       component: "lib:mzanic-xmonad"
 

@@ -27,7 +27,6 @@ import Data.List (groupBy, sortBy)
 import XMonad.Actions.Profiles
 import XMonad.Actions.TopicSpace
 
-
 data ProfileTopicLayout = PTL
   { topicItem :: !TopicItem
   , pId       :: ![ProfileId]

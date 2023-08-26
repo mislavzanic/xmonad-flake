@@ -76,7 +76,7 @@ promptKeys conf =
                     Raw 2 -> addWSToProfilePrompt promptTheme
                     Raw 3 -> removeWSFromProfilePrompt promptTheme
                     _     -> shellPrompt promptTheme)
-  , ("M-C-p", switchProfilePrompt promptTheme)
+  , ("M-C-p", switchProfilePrompt' promptTheme)
   , ("M-d",  withPrefixArgument $
                \case Raw 1 -> windowPrompt promptTheme Bring allProfileWindows
                      _     -> windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
@@ -180,17 +180,5 @@ winConfig conf = WindowConfig
                                    , rect_x = 1600
                                    , rect_width = 350
                                    , rect_height = 430
-                                   }
-  }
-
-winConfig' :: UserConf -> WindowConfig
-winConfig' conf = WindowConfig
-  { winBg = basebg
-  , winFg = basefg
-  , winFont = userFontStr conf
-  , winRect = CustomRect Rectangle { rect_y = -40
-                                   , rect_x = -40
-                                   , rect_width = 1000
-                                   , rect_height = 500
                                    }
   }

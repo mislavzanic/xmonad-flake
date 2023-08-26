@@ -13,6 +13,8 @@ import XMonad.Actions.PerProfileWindows (hideBeforeSwitch, showAfterSwitch)
 import XMonad.Util.UserConf (UserConf (userPromptConfig, userTopicConfig, userTopics))
 import XMonad.Util.PTL
 
+import XMonad.Layout.PerProfileWindows
+
 profileKeys :: UserConf -> [(String, X())]
 profileKeys = topicKeys 
 
@@ -56,6 +58,13 @@ switchProfilePrompt :: XPConfig -> X()
 switchProfilePrompt c = do
   ps <- profileIds
   mkXPrompt (ProfilePrompt "Profile: ") c (mkComplFunFromList' c ps) switchToProfile
+
+switchProfilePrompt' :: XPConfig -> X()
+switchProfilePrompt' c = do
+  ps <- profileIds
+  mkXPrompt (ProfilePrompt "Profile: ") c (mkComplFunFromList' c ps) switchAndHandleMarked
+  where
+   switchAndHandleMarked pid = hideMarkedWindows >> switchToProfile pid >> popMarkedWindows
 
 switchProfileWithHidingPrompt :: XPConfig -> X()
 switchProfileWithHidingPrompt c = do

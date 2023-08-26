@@ -23,6 +23,7 @@ library
                    Workspaces.Scratchpad
                    XMonad.Actions.Profiles
                    XMonad.Actions.PerProfileWindows
+                   XMonad.Layout.PerProfileWindows
                    XMonad.Util.UserConf
                    XMonad.Util.DebugWindow
                    XMonad.Util.PTL

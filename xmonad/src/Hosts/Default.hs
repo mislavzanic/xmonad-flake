@@ -27,6 +27,7 @@ userConf :: UserConf
 userConf = def
   { userConfDir = "/home/mzanic/.config"
   , userLock = "i3lock -n -i /home/mzanic/.local/share/wallpaper"
+  , userBrowser = myBrowser
   , userEditor = myEditor
   , userModMask = mod4Mask
   , userTopics = ws
@@ -46,6 +47,9 @@ userConf = def
     myEditor :: String
     myEditor = "emacsclient -c -a'emacs'"
 
+    myBrowser :: String
+    myBrowser = "firefox"
+
     topicConfig :: TopicConfig
     topicConfig = def
       { topicDirs          = tiDirs    $ map topicItem ws
@@ -56,7 +60,7 @@ userConf = def
 
     home :: [ProfileTopicLayout]
     home =
-      [ mkPTL ["Dev", "Home"] ["tiled"] $ inHome "web" (spawn "firefox")
+      [ mkPTL ["Dev", "Home"] ["tiled"] $ inHome "web" (spawn myBrowser)
       , mkPTL ["Dev"]                  ["hack"]  $ TI "dev" "~/.local/dev" $ spawnEditorInTopic topicConfig
       , mkPTL ["Dev"]                  ["hack"]  $ TI "nix-dev" "~/.local/dev/nix-tinkering" (spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig)
       , mkPTL ["Dev"]                  ["hack"]  $ TI "cp" "~/.local/dev/compprog" $ spawnEditorInTopic topicConfig
@@ -66,10 +70,12 @@ userConf = def
       , TI "vid"  "~/.local/torrents" $ spawnTermInTopic topicConfig
       , TI "pdf"  "~/.local/books" $ spawnTermInTopic topicConfig
       ] <> map (mkPTL ["Home"] ["hack"])
-      [ TI "dots"  "~/.config/.dotfiles"                      $ spawnEditorInTopic topicConfig 
-      , TI "xmn"   "~/.local/dev/dots/xmonad-flake/xmonad"    $ spawnEditorInTopic topicConfig
-      , TI "emacs" "~/.local/dev/dots/emacs-flake"            $ spawnEditorInTopic topicConfig
-      , TI "xmb"   "~/.local/dev/dots/xmonad-flake/xmobar"    $ spawnEditorInTopic topicConfig
+      [ TI "dots"      "~/.config/.dotfiles"                   $ spawnEditorInTopic topicConfig 
+      , TI "xmn"       "~/.local/dev/dots/xmonad-flake/xmonad" $ spawnEditorInTopic topicConfig
+      , TI "emacs"     "~/.local/dev/dots/emacs-flake"         $ spawnEditorInTopic topicConfig
+      , TI "xmb"       "~/.local/dev/dots/xmonad-flake/xmobar" $ spawnEditorInTopic topicConfig
+      , TI "nix-mods"  "~/.local/dev/dots/nix-modules"         $ spawnEditorInTopic topicConfig
+      , TI "nix-utils" "~/.local/dev/dots/nix-utils"           $ spawnEditorInTopic topicConfig
       ]
     
     notes :: [ProfileTopicLayout]
