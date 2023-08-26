@@ -53,7 +53,8 @@ markWindowMsg :: ProfileWindowMap a -> Window -> X (Maybe (ProfileWindowMap a))
 markWindowMsg (ProfileWindowMap pMap) win = do
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
-  sc 0xffd98107 win
+  sc "#4287f5" 0xff4287f5 win
+  -- sc 0xffd98107 win
   -- sc 0xf28933 win
   return . Just . ProfileWindowMap $ update (p,cur)
   where
@@ -69,7 +70,7 @@ unMarkWindowMsg :: ProfileWindowMap a -> Window -> X (Maybe (ProfileWindowMap a)
 unMarkWindowMsg (ProfileWindowMap pMap) win = do
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
-  sc 0xffff8059 win
+  sc "#ff8059" 0xffff8059 win
   return . Just . ProfileWindowMap $ update (p,cur)
   where
    update :: (ProfileId, WorkspaceId) -> Map (ProfileId, WorkspaceId) [Window]
@@ -108,7 +109,7 @@ popMarkedMsg (ProfileWindowMap pMap) = do
 
    getWindows pid wid = fromMaybe [] $ Map.lookup (pid,wid) pMap
 
-sc :: Pixel -> Window -> X ()
-sc c win = withDisplay $ \dpy -> do
-  colorName <- io (pixelToString dpy c)
+sc :: String -> Pixel -> Window -> X ()
+sc colorName c win = withDisplay $ \dpy -> do
+  -- colorName <- io (pixelToString dpy c)
   setWindowBorderWithFallback dpy win colorName c
