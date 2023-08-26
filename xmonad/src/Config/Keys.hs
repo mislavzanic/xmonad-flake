@@ -138,8 +138,7 @@ layoutKeys conf =
 
 appKeys :: UserConf -> [(String, X ())]
 appKeys conf =
-  [ ("M-q", kill)
-  , ("M-C-q", withUnfocused killWindow)
+  [ ("M-q", withFocused unMarkWindow >> kill)
 
   , ("<XF86AudioRaiseVolume>", spawn "pamixer -i 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")
   , ("<XF86AudioLowerVolume>", spawn "pamixer -d 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")

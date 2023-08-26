@@ -53,9 +53,6 @@ markWindowMsg :: ProfileWindowMap a -> Window -> X (Maybe (ProfileWindowMap a))
 markWindowMsg (ProfileWindowMap pMap) win = do
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
-  sc "#4287f5" win
-  -- sc 0xffd98107 win
-  -- sc 0xf28933 win
   return . Just . ProfileWindowMap $ update (p,cur)
   where
    update :: (ProfileId, WorkspaceId) -> Map (ProfileId, WorkspaceId) [Window]
@@ -70,7 +67,6 @@ unMarkWindowMsg :: ProfileWindowMap a -> Window -> X (Maybe (ProfileWindowMap a)
 unMarkWindowMsg (ProfileWindowMap pMap) win = do
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
-  sc "#ff8059" win
   return . Just . ProfileWindowMap $ update (p,cur)
   where
    update :: (ProfileId, WorkspaceId) -> Map (ProfileId, WorkspaceId) [Window]
