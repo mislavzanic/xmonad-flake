@@ -73,13 +73,13 @@ scratchpadKeys =
 promptKeys :: UserConf -> [(String, X ())]
 promptKeys conf =
   [ ("M-p", withPrefixArgument $
-              \case Raw 1 -> switchProfilePrompt promptTheme
+              \case Raw 1 -> switchProfilePrompt' promptTheme
                     Raw 2 -> addWSToProfilePrompt promptTheme
                     Raw 3 -> removeWSFromProfilePrompt promptTheme
                     _     -> shellPrompt promptTheme)
-  , ("M-C-p", switchProfilePrompt' promptTheme)
-  , ("M-C-m", withFocused markWindow)
-  , ("M-C-n", withFocused unMarkWindow)
+  , ("M-n", withPrefixArgument $
+              \case Raw 1 -> withFocused unMarkWindow
+                    _     -> withFocused markWindow)
   , ("M-d",  withPrefixArgument $
                \case Raw 1 -> windowPrompt promptTheme Bring allProfileWindows
                      _     -> windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
