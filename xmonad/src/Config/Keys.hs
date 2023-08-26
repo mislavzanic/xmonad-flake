@@ -26,6 +26,7 @@ import XMonad.Prompt.Window
 import XMonad.Util.XUtils
 import XMonad.Util.NamedScratchpad ( namedScratchpadAction, scratchpadWorkspaceTag, toggleDynamicNSP, dynamicNSPAction )
 import XMonad.Layout.Spacing (toggleWindowSpacingEnabled, toggleScreenSpacingEnabled, decWindowSpacing, decScreenSpacing, incWindowSpacing, incScreenSpacing)
+import XMonad.Layout.PerProfileWindows
 import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
 import XMonad.Actions.Minimize (minimizeWindow, withLastMinimized, maximizeWindowAndFocus)
 import XMonad.Actions.PerProfileWindows (hideAll, showAll, hideFocused, showLastHidden, swapWithHidden)
@@ -77,6 +78,8 @@ promptKeys conf =
                     Raw 3 -> removeWSFromProfilePrompt promptTheme
                     _     -> shellPrompt promptTheme)
   , ("M-C-p", switchProfilePrompt' promptTheme)
+  , ("M-C-m", withFocused markWindow)
+  , ("M-C-n", withFocused unMarkWindow)
   , ("M-d",  withPrefixArgument $
                \case Raw 1 -> windowPrompt promptTheme Bring allProfileWindows
                      _     -> windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
@@ -112,8 +115,6 @@ wsKeys conf =
   , ("M1-j",  DO.moveTo Next filterWS)
   , ("M1-k",  DO.moveTo Prev filterWS)
   , ("M1-`",  toggleLastProfile)
-
-  , ("M-C-p", switchProfilePrompt $ userPromptConfig conf)
   ]
   where
     filterWS = wsFilter :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]

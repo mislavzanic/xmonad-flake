@@ -40,6 +40,9 @@ pHiddenWindows = ModifiedLayout $ ProfileWindowMap Map.empty
 markWindow :: Window -> X()
 markWindow = sendMessage . MarkWindow
 
+unMarkWindow :: Window -> X()
+unMarkWindow = sendMessage . UnMarkWindow
+
 hideMarkedWindows :: X()
 hideMarkedWindows = sendMessage HideMarked
 
