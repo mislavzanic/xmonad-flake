@@ -20,7 +20,6 @@ import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
-import XMonad.Layout.PerProfileWindows
 import XMonad.Layout.Renamed
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Simplest
@@ -47,7 +46,6 @@ rTall m r c = ResizableTall m r c []
 myLayout conf = onWorkspace "vid" full lh
   where
     lh = layoutOpts
-       $ pHiddenWindows
        $ onWorkspaces hackingWorkspaces (hack ||| full)
        $ onWorkspaces tiledWorkspaces (tiled ||| full)
        $ tiled ||| hack ||| full

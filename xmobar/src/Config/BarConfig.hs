@@ -60,7 +60,6 @@ baseTopWidgets n pos =
 
 baseBottomWidgets n pos =
   [ Run $ XPropertyLog $ screenLog n
-  , Run $ XPropertyLog "_XMOBAR_HIDDEN_WIN"
   ] <>
   (if n == 0 then
     [Run trayer]

@@ -43,7 +43,6 @@ import XMonad.Actions.Prefix (usePrefixArgument)
 import XMonad.Util.Hacks (trayerAboveXmobarEventHook)
 import XMonad.Actions.Profiles
 import qualified Workspaces.Profile as WP
-import XMonad.Actions.PerProfileWindows (hiddenWSLogHook)
 import XMonad.Util.UserConf (UserConf(userBorderWidth, userTerminal, userModMask, userTopics, userDefaultProfile))
 import XMonad.Util.PTL
 
@@ -63,7 +62,7 @@ baseConfig = setEwmhActivateHook activateHook
       , workspaces         = map show [1..9 :: Int]
       , normalBorderColor  = "#333333"
       , focusedBorderColor = base01
-      , logHook            = hiddenWSLogHook <> masterHistoryHook <> updatePointer (0.5, 0.5) (0, 0)
+      , logHook            = masterHistoryHook <> updatePointer (0.5, 0.5) (0, 0)
       }
       
 

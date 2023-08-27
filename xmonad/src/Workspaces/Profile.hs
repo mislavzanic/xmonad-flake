@@ -12,8 +12,6 @@ import Data.Foldable
 import XMonad.Util.UserConf (UserConf (userPromptConfig, userTopicConfig, userTopics))
 import XMonad.Util.PTL
 
-import XMonad.Layout.PerProfileWindows
-
 profileKeys :: UserConf -> [(String, X())]
 profileKeys = topicKeys 
 
@@ -44,16 +42,9 @@ topicKeys conf =
     promptTheme = userPromptConfig conf
 
 toggleLastProfile :: X()
-toggleLastProfile = hideMarkedWindows >> previousProfile >>= (`forM_` switchToProfile) >> popMarkedWindows
+toggleLastProfile = previousProfile >>= (`forM_` switchToProfile)
 
 switchProfilePrompt :: XPConfig -> X()
 switchProfilePrompt c = do
   ps <- profileIds
   mkXPrompt (ProfilePrompt "Profile: ") c (mkComplFunFromList' c ps) switchToProfile
-
-switchProfilePrompt' :: XPConfig -> X()
-switchProfilePrompt' c = do
-  ps <- profileIds
-  mkXPrompt (ProfilePrompt "Profile: ") c (mkComplFunFromList' c ps) switchAndHandleMarked
-  where
-   switchAndHandleMarked pid = hideMarkedWindows >> switchToProfile pid >> popMarkedWindows

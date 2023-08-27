@@ -61,7 +61,7 @@ myTemplate n pos = case pos of
   "bottom" -> bottomTemplate
   _        -> topTemplate
   where
-    bottomTemplate :: String = "%" <> screenLog n <> "% }{" <> "%_XMOBAR_HIDDEN_WIN%" <> (if n == 0 then "%trayerpad%" else "%date%")
+    bottomTemplate :: String = "%" <> screenLog n <> "% }{" <> (if n == 0 then "%trayerpad%" else "%date%")
     topTemplate :: String = intercalate (colorSeparator "|") leftWidgets <> myScreenLog <> intercalate (colorSeparator "|") rightWidgets
     myScreenLog :: String = "} <icon=haskell.xpm/>" <> colorSeparator "::" <> "%" <> "_XMONAD_LOG_" <> show n <> "% { "
     leftWidgets :: [String] = inColor "#cccccc" <$> [ "%battery%"

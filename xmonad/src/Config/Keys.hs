@@ -26,10 +26,8 @@ import XMonad.Prompt.Window
 import XMonad.Util.XUtils
 import XMonad.Util.NamedScratchpad ( namedScratchpadAction, scratchpadWorkspaceTag, toggleDynamicNSP, dynamicNSPAction )
 import XMonad.Layout.Spacing (toggleWindowSpacingEnabled, toggleScreenSpacingEnabled, decWindowSpacing, decScreenSpacing, incWindowSpacing, incScreenSpacing)
-import XMonad.Layout.PerProfileWindows
 import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
 import XMonad.Actions.Minimize (minimizeWindow, withLastMinimized, maximizeWindowAndFocus)
-import XMonad.Actions.PerProfileWindows (hideAll, showAll, hideFocused, showLastHidden, swapWithHidden)
 import XMonad.Util.UserConf
 
 type Keybind = (String, X ())
@@ -73,13 +71,10 @@ scratchpadKeys =
 promptKeys :: UserConf -> [(String, X ())]
 promptKeys conf =
   [ ("M-p", withPrefixArgument $
-              \case Raw 1 -> switchProfilePrompt' promptTheme
+              \case Raw 1 -> switchProfilePrompt promptTheme
                     Raw 2 -> addWSToProfilePrompt promptTheme
                     Raw 3 -> removeWSFromProfilePrompt promptTheme
                     _     -> shellPrompt promptTheme)
-  , ("M-n", withPrefixArgument $
-              \case Raw 1 -> withFocused unMarkWindow
-                    _     -> withFocused markWindow)
   , ("M-d",  withPrefixArgument $
                \case Raw 1 -> windowPrompt promptTheme Bring allProfileWindows
                      _     -> windowMultiPrompt promptTheme [(Goto, allProfileWindows), (Goto, wsWindows)])
@@ -138,7 +133,7 @@ layoutKeys conf =
 
 appKeys :: UserConf -> [(String, X ())]
 appKeys conf =
-  [ ("M-q", withFocused unMarkWindow >> kill)
+  [ ("M-q", kill)
 
   , ("<XF86AudioRaiseVolume>", spawn "pamixer -i 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")
   , ("<XF86AudioLowerVolume>", spawn "pamixer -d 5 && notify-send -u low -t 1500 $(pamixer --get-volume)")
