@@ -3,8 +3,8 @@ _: oldPkgs: rec {
     overrides =
     oldPkgs.lib.composeExtensions (old.overrides or (_: _: {}))
     (self: super: rec {
-      mzanic-xmonad = self.callCabal2nix "mzanic-xmonad" ./xmonad {};
-      mzanic-xmobar = self.callCabal2nix "mzanic-xmobar" ./xmobar {};
+      mzanic-xmonad = self.callCabal2nix "mzanic-xmonad" ../xmonad {};
+      mzanic-xmobar = self.callCabal2nix "mzanic-xmobar" ../xmobar {};
     });
   });
 }
