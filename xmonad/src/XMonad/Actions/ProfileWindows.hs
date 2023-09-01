@@ -26,11 +26,7 @@ instance ExtensionClass ProfileWindowMap where
   initialValue = ProfileWindowMap Map.empty
 
 hideWindow :: Window -> X()
-hideWindow win = do
-  modify (\s -> s { windowset = W.delete' win $ windowset s })
-  modifyWindowSet $
-    \ws -> ws { W.current = (W.current ws)
-                                { W.workspace = W.workspace $ W.current ws}}
+hideWindow win = modify (\s -> s { windowset = W.delete' win $ windowset s }) >> refresh
 
 popHiddenWindow :: Window -> X()
 popHiddenWindow = windows . W.insertUp
