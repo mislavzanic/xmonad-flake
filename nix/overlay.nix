@@ -7,5 +7,5 @@ _: oldPkgs: rec {
       mzanic-xmobar = self.callCabal2nix "mzanic-xmobar" ./xmobar {};
     });
   });
-};
+}
 
