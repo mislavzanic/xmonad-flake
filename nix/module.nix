@@ -4,7 +4,7 @@ with lib.my;
 let
   cfg = config.modules.desktop.wm;
   cfgType = config.type;
-  configDir = ../../../config;
+  configDir = ../config;
 in {
   options.modules.desktop.wm = with types; {
     enable = mkBoolOpt false;
