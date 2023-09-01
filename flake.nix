@@ -16,7 +16,7 @@
       inputs.git-ignore-nix.follows = "git-ignore-nix";
     };
   };
-  outputs = {
+  outputs = inputs@{
     self,
     flake-utils,
     nixpkgs,
