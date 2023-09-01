@@ -25,17 +25,7 @@
     xmobar,
     ...
   }: let
-    overlay = newPkgs: oldPkgs: rec {
-      haskellPackages = oldPkgs.haskellPackages.override (old: {
-        overrides =
-        oldPkgs.lib.composeExtensions (old.overrides or (_: _: {}))
-        (self: super: rec {
-          mzanic-xmonad = self.callCabal2nix "mzanic-xmonad" ./xmonad {};
-          mzanic-xmobar = self.callCabal2nix "mzanic-xmobar" ./xmobar {};
-        });
-      });
-    };
-
+    overlay = import ./overlay.nix;
     overlays = [xmonad.overlay xmonad-contrib.overlay xmobar.overlay overlay];
   in
     flake-utils.lib.eachDefaultSystem (system: let
@@ -44,8 +34,9 @@
         config.allowBroken = true;
       };
     in rec {
-      devShell = import ./shell.nix;
+      devShell = import ./nix/shell.nix;
       defaultPackage = pkgs.haskellPackages.mzanic-xmonad;
+      module = import ./nix/module.nix;
     }) // {
       inherit overlays overlay;
     };
