@@ -23,7 +23,7 @@ import XMonad.Layout.MultiToggle.Instances ( StdTransformers(NBFULL, NOBORDERS) 
 import XMonad.Layout.SubLayouts ( mergeDir, GroupMsg(UnMerge), onGroup )
 import XMonad.Prompt.Shell ( shellPrompt )
 import XMonad.Prompt.Window
-import XMonad.Util.XUtils
+import XMonad.Util.XUtils hiding (hideWindow)
 import XMonad.Util.NamedScratchpad ( namedScratchpadAction, scratchpadWorkspaceTag, toggleDynamicNSP, dynamicNSPAction )
 import XMonad.Layout.Spacing (toggleWindowSpacingEnabled, toggleScreenSpacingEnabled, decWindowSpacing, decScreenSpacing, incWindowSpacing, incScreenSpacing)
 import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
@@ -79,6 +79,7 @@ promptKeys conf =
 
   , ("M-n", withPrefixArgument $
               \case Raw 1 -> withFocused unMarkWindow
+                    Raw 2 -> withFocused markWindow >> withFocused hideWindow
                     _     -> withFocused markWindow)
 
   , ("M-d",  withPrefixArgument $
