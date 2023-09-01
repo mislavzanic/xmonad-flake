@@ -25,7 +25,7 @@
     xmobar,
     ...
   }: let
-    overlay = import ./overlay.nix;
+    overlay = import ./nix/overlay.nix;
     overlays = [xmonad.overlay xmonad-contrib.overlay xmobar.overlay overlay];
   in
     flake-utils.lib.eachDefaultSystem (system: let
