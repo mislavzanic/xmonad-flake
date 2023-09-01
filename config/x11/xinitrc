@@ -1,0 +1,7 @@
+feh --bg-fill ~/.local/share/bg
+
+nm-applet &
+blueman-applet &
+pasystray &
+
+xmodmap ~/.config/.dotfiles/config/emacs/exwm/Xmodmap &

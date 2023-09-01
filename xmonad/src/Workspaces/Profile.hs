@@ -6,6 +6,7 @@ import qualified XMonad.StackSet as W
 import XMonad.Actions.Profiles
 import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
 import XMonad.Actions.TopicSpace
+import XMonad.Actions.ProfileWindows
 import Workspaces.Topics
 import XMonad.Prompt (XPConfig, XPrompt (showXPrompt), mkComplFunFromList', mkXPrompt)
 import Data.Foldable
@@ -44,7 +45,21 @@ topicKeys conf =
 toggleLastProfile :: X()
 toggleLastProfile = previousProfile >>= (`forM_` switchToProfile)
 
+profileActionWithHidePop :: X() -> X()
+profileActionWithHidePop action = withCurrentProfile hideMarkedWindows >> action >> withCurrentProfile popMarkedWindows
+
+toggleLastProfileAndHide :: X()
+toggleLastProfileAndHide = profileActionWithHidePop toggleLastProfile
+
 switchProfilePrompt :: XPConfig -> X()
 switchProfilePrompt c = do
   ps <- profileIds
   mkXPrompt (ProfilePrompt "Profile: ") c (mkComplFunFromList' c ps) switchToProfile
+
+switchProfilePrompt' :: XPConfig -> X()
+switchProfilePrompt' c = do
+  ps <- profileIds
+  mkXPrompt (ProfilePrompt "Profile: ") c (mkComplFunFromList' c ps) f
+  where
+   f :: ProfileId -> X()
+   f pid = profileActionWithHidePop $ switchToProfile pid

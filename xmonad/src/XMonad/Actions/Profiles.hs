@@ -71,6 +71,7 @@ type ProfileMap = Map ProfileId Profile
 data Profile = Profile
   { profileId :: !ProfileId
   , profileWS :: ![WorkspaceId]
+  , addedWS   :: ![WorkspaceId]
   }
 
 --------------------------------------------------------------------------------
@@ -118,8 +119,11 @@ instance XPrompt ProfilePrompt where
   showXPrompt (ProfilePrompt x) = x
 
 --------------------------------------------------------------------------------
+defaultProfile :: Profile
+defaultProfile = defaultProfile
+
 currentProfile :: X ProfileId
-currentProfile = profileId . fromMaybe (Profile "default" []) . current <$> XS.get
+currentProfile = profileId . fromMaybe defaultProfile . current <$> XS.get
 
 previousProfile :: X (Maybe ProfileId)
 previousProfile = XS.gets previous
@@ -134,7 +138,7 @@ profileIds :: X [ProfileId]
 profileIds = Map.keys <$> XS.gets profilesMap
 
 currentProfileWorkspaces :: X [WorkspaceId]
-currentProfileWorkspaces = XS.gets current <&> profileWS . fromMaybe (Profile "default" [])
+currentProfileWorkspaces = XS.gets current <&> profileWS . fromMaybe (defaultProfile)
 
 --------------------------------------------------------------------------------
 -- | Hook profiles into XMonad. This function adds a startup hook that
@@ -202,7 +206,7 @@ profilesStartupHook ps pid = XS.modify go >> switchWSOnScreens pid
 
     setCurrentProfile :: ProfileMap -> Maybe Profile
     setCurrentProfile s = case Map.lookup pid s of
-      Nothing -> Just $ Profile pid []
+      Nothing -> Just $ Profile pid [] []
       Just pn -> Just pn
 
 --------------------------------------------------------------------------------
@@ -240,7 +244,7 @@ switchToProfile pid = setProfile pid >> switchWSOnScreens pid
 profileWorkspaces :: ProfileId -> X [WorkspaceId]
 profileWorkspaces pid = profileMap >>= findPWs
   where
-    findPWs pm = return . profileWS . fromMaybe (Profile "default" []) $ Map.lookup pid pm
+    findPWs pm = return . profileWS . fromMaybe (defaultProfile) $ Map.lookup pid pm
 
 --------------------------------------------------------------------------------
 addWSToProfilePrompt :: XPConfig -> X()
@@ -274,7 +278,7 @@ addWSToProfile :: WorkspaceId -> ProfileId -> X()
 addWSToProfile wid pid = XS.modify go
   where
    go :: ProfileState -> ProfileState
-   go ps = ps {profilesMap = update $ profilesMap ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
+   go ps = ps {profilesMap = update $ profilesMap ps, current = update' $ fromMaybe defaultProfile $ current ps}
 
    update :: ProfileMap -> ProfileMap
    update mp = case Map.lookup pid mp of
@@ -282,10 +286,10 @@ addWSToProfile wid pid = XS.modify go
      Just p  -> if wid `elem` profileWS p then mp else Map.adjust f pid mp
 
    f :: Profile -> Profile
-   f p = Profile pid (wid : profileWS p) 
+   f p = Profile pid (wid : profileWS p) []
 
    update' :: Profile -> Maybe Profile
-   update' cp = if profileId cp == pid && wid `notElem` profileWS cp then Just (Profile pid $ wid:profileWS cp) else Just cp
+   update' cp = if profileId cp == pid && wid `notElem` profileWS cp then Just (Profile pid (wid:profileWS cp) []) else Just cp
 
 --------------------------------------------------------------------------------
 removeWSFromProfilePrompt :: XPConfig -> X()
@@ -303,7 +307,7 @@ removeWSFromProfile :: WorkspaceId -> ProfileId -> X()
 removeWSFromProfile wid pid = XS.modify go
   where
    go :: ProfileState -> ProfileState
-   go ps = ps {profilesMap = update $ profilesMap ps, current = update' $ fromMaybe (Profile "default" []) $ current ps}
+   go ps = ps {profilesMap = update $ profilesMap ps, current = update' $ fromMaybe defaultProfile $ current ps}
 
    update :: ProfileMap -> ProfileMap
    update mp = case Map.lookup pid mp of
@@ -311,10 +315,10 @@ removeWSFromProfile wid pid = XS.modify go
      Just p  -> if wid `elem` profileWS p then Map.adjust f pid mp else mp
 
    f :: Profile -> Profile
-   f p = Profile pid (delete wid $ profileWS p) 
+   f p = Profile pid (delete wid $ profileWS p) []
 
    update' :: Profile -> Maybe Profile
-   update' cp = if profileId cp == pid && wid `elem` profileWS cp then Just (Profile pid $ delete wid $ profileWS cp) else Just cp
+   update' cp = if profileId cp == pid && wid `elem` profileWS cp then Just (Profile pid (delete wid $ profileWS cp) []) else Just cp
 
 --------------------------------------------------------------------------------
 -- | Pretty printer for a bar. Prints workspace ids of a current profile.
@@ -338,7 +342,7 @@ switchWSOnScreens pid = do
   hist <- profileHistory
   vis <- gets $ W.visible . windowset
   cur <- gets $ W.current . windowset
-  pws <- profileMap <&> (profileWS . fromMaybe (Profile pid []) . Map.lookup pid)
+  pws <- profileMap <&> (profileWS . fromMaybe (Profile pid [] []) . Map.lookup pid)
   case Map.lookup pid hist of
     Nothing -> switchScreens $ zip (W.screen <$> (cur:vis)) pws
     Just xs -> compareAndSwitch (f (W.screen <$> cur:vis) xs) (cur:vis) pws
@@ -363,7 +367,7 @@ switchWSOnScreens pid = do
 
 --------------------------------------------------------------------------------
 chooseAction :: (String -> X ()) -> X ()
-chooseAction f = XS.gets current <&> (profileId . fromMaybe (Profile "default" [])) >>= f
+chooseAction f = XS.gets current <&> (profileId . fromMaybe defaultProfile) >>= f
 
 --------------------------------------------------------------------------------
 -- | Keybindings per Profile
@@ -403,3 +407,4 @@ allProfileWindows' WindowBringerConfig{ windowTitler = titler, windowFilter = in
    where keyValuePairs ws = let wins = W.integrate' (W.stack ws)
                            in mapM (keyValuePair ws) =<< filterM include wins
          keyValuePair ws w = (, w) <$> titler ws w
+
