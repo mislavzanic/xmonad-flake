@@ -300,7 +300,11 @@ removeWSFromProfilePrompt c = do
    f :: String -> X()
    f p = do
      arr <- profileWorkspaces p
-     mkXPrompt (ProfilePrompt "Ws to remove from profile:") c (mkComplFunFromList' c arr) (`removeWSFromProfile` p)
+     mkXPrompt (ProfilePrompt "Ws to remove from profile:") c (mkComplFunFromList' c arr) $
+       \ws -> do
+         cp <- currentProfile
+         ws `removeWSFromProfile` p 
+         when (cp == p) $ currentProfile >>= switchWSOnScreens
 
 --------------------------------------------------------------------------------
 removeWSFromProfile :: WorkspaceId -> ProfileId -> X()
