@@ -27,9 +27,6 @@ instance ExtensionClass ProfileWindowMap where
 
 hideWindow' :: WorkspaceId -> Window -> X()
 hideWindow' _ win = windows $ W.delete' win
-  -- modifyWindowSet $ W.delete' win
-  -- hide win
-  -- withWindowSet $ \new -> windows $ const new
 
 hideWindow :: Window -> X()
 hideWindow = hideWindow' "a"
@@ -60,11 +57,6 @@ insertToWorkspace wid a s = if W.member a s then s else insert
                                                                                      Nothing -> W.Stack a [] [])
                                                                     } else w) <$> W.hidden s }
 
-
-  -- if W.member a s then s else insert
-  -- where
-  --  insert = modify (Just $ W.Stack a [] []) (\(W.Stack t l r) -> Just $ W.Stack a l (t:r)) s
-  --  modify d f s = s {}
 
 markWindow :: Window -> X ()
 markWindow win = do
