@@ -17,7 +17,6 @@ import XMonad.Actions.Promote ( promote )
 import XMonad.Actions.Search ( promptSearch )
 import XMonad.Actions.Submap ( visualSubmap )
 import XMonad.Hooks.ManageDocks
-import XMonad.Layout.BoringWindows
 import XMonad.Layout.MultiToggle (Toggle (Toggle))
 import XMonad.Layout.MultiToggle.Instances ( StdTransformers(NBFULL, NOBORDERS) )
 import XMonad.Layout.SubLayouts ( mergeDir, GroupMsg(UnMerge), onGroup )
@@ -35,11 +34,11 @@ type Keybind = (String, X ())
 
 windowsKeys :: [Keybind]
 windowsKeys =
-  [ ("M-j",   focusDown)
-  , ("M-k",   focusUp)
-  , ("M-m",   focusMaster)
-  , ("M-S-j", swapDown)
-  , ("M-S-k", swapUp)
+  [ ("M-j",   windows W.focusDown)
+  , ("M-k",   windows W.focusUp)
+  , ("M-m",   windows W.focusMaster)
+  , ("M-S-j", windows W.swapDown)
+  , ("M-S-k", windows W.swapUp)
 
   , ("M-C-j", onGroup W.focusDown')
   , ("M-C-k", onGroup W.focusUp')

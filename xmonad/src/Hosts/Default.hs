@@ -60,16 +60,16 @@ userConf = def
 
     home :: [ProfileTopicLayout]
     home =
-      [ mkPTL ["Dev", "Home"] ["tiled"] $ inHome "web" (spawn myBrowser)
+      [ mkPTL ["Dev", "Home", "Dots"] ["tiled"] $ inHome "web" (spawn myBrowser)
       , mkPTL ["Dev"]                  ["hack"]  $ TI "dev" "~/.local/dev" $ spawnEditorInTopic topicConfig
       , mkPTL ["Dev"]                  ["hack"]  $ TI "nix-dev" "~/.local/dev/nix-tinkering" (spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig)
       , mkPTL ["Dev"]                  ["hack"]  $ TI "cp" "~/.local/dev/compprog" $ spawnEditorInTopic topicConfig
-      ] <> map (mkPTL ["Media"] ["tiled"])
+      ] <> map (mkPTL ["Home"] ["tiled"])
       [ inHome "rss" (spawn $ myEditor <> " --eval '(elfeed)'")
       , TI "blog" "~/.local/dev/blog/webContent" $ spawnEditorInTopic topicConfig
       , TI "vid"  "~/.local/torrents" $ spawnTermInTopic topicConfig
       , TI "pdf"  "~/.local/books" $ spawnTermInTopic topicConfig
-      ] <> map (mkPTL ["Home"] ["hack"])
+      ] <> map (mkPTL ["Dots"] ["hack"])
       [ TI "dots"      "~/.config/.dotfiles"                   $ spawnEditorInTopic topicConfig 
       , TI "xmn"       "~/.local/dev/dots/xmonad-flake/xmonad" $ spawnEditorInTopic topicConfig
       , TI "emacs"     "~/.local/dev/dots/emacs-flake"         $ spawnEditorInTopic topicConfig
@@ -79,7 +79,7 @@ userConf = def
       ]
     
     notes :: [ProfileTopicLayout]
-    notes = map (mkPTL ["Dev", "Home", "Media"] ["tiled", "hack"])
+    notes = map (mkPTL ["Dev", "Home", "Dots"] ["tiled", "hack"])
       [ TI "notes" "~/.local/notes" $ spawnEditorInTopic topicConfig
       , inHome "temp1" $ spawnTermInTopic topicConfig
       ]

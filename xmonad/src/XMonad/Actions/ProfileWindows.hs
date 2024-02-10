@@ -5,10 +5,12 @@ module XMonad.Actions.ProfileWindows where
 import Data.Maybe
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
+import System.IO (hPutStrLn, stderr)
 
 import XMonad
 import qualified XMonad.StackSet as W
 import qualified XMonad.Util.ExtensibleState as XS
+import Data.Foldable (forM_)
 
 import XMonad.Actions.Profiles
 import Data.List (sortBy, groupBy)
@@ -25,11 +27,29 @@ newtype ProfileWindowMap = ProfileWindowMap
 instance ExtensionClass ProfileWindowMap where
   initialValue = ProfileWindowMap Map.empty
 
+addProfileWindows :: XConfig a -> XConfig a
+addProfileWindows conf = conf { logHook = borderColorLogHook <> logHook conf }
+
+borderColorLogHook :: X()
+borderColorLogHook = do
+  p <- currentProfile
+  pwm <- winMap <$> XS.get
+  cur <- gets $ W.tag . W.workspace . W.current . windowset
+  forM_ (Map.lookup (p, cur) pwm) $ mapM_ $ \win -> withFocused $ \fwin -> do
+    case win == fwin of
+      True  -> changeColor "#ff33ff" win
+      False -> changeColor "#331133" win
+
+changeColor :: String -> Window -> X()
+changeColor cs win = withDisplay $ \dpy -> do
+    c' <- io (initColor dpy cs)
+    forM_ c' $ setWindowBorderWithFallback dpy win cs
+
 hideWindow' :: WorkspaceId -> Window -> X()
 hideWindow' _ win = windows $ W.delete' win
 
 hideWindow :: Window -> X()
-hideWindow = hideWindow' "a"
+hideWindow = hideWindow' ""
 
 popHiddenWindow :: WorkspaceId -> Window -> X()
 popHiddenWindow wid = windows . insertToWorkspace wid
@@ -46,12 +66,12 @@ insertToWorkspace wid a s = if W.member a s then s else insert
      | wid `elem` (W.tag <$> W.hidden s) = insertHidden $ (\(W.Stack t l r) -> Just $ W.Stack a l (t:r))
      | otherwise = insertCurrent $ (\(W.Stack t l r) -> Just $ W.Stack a l (t:r))
    insertCurrent f = W.modify (Just $ W.Stack a [] []) f s
-   insertVisible f = s { W.visible = (\(W.Screen w scr scrd) -> if (wid == W.tag w) then (W.Screen w scr scrd) { W.workspace = w
+   insertVisible f = s { W.visible = (\(W.Screen w scr scrd) -> if wid == W.tag w then (W.Screen w scr scrd) { W.workspace = w
                                                                                              { W.stack = f (case W.stack w of
                                                                                                               Just st -> st
                                                                                                               Nothing -> W.Stack a [] [])
                                                                                              }
-                                                                                           } else (W.Screen w scr scrd)) <$> (W.visible s) }
+                                                                                           } else W.Screen w scr scrd) <$> W.visible s }
    insertHidden  f = s { W.hidden = (\w -> if wid == W.tag w then w { W.stack = f (case W.stack w of
                                                                                      Just st -> st
                                                                                      Nothing -> W.Stack a [] [])
@@ -63,6 +83,7 @@ markWindow win = do
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
   XS.modify $ go (p,cur)
+  changeColor "#ff33ff" win
   where
    go :: (ProfileId, WorkspaceId) -> ProfileWindowMap -> ProfileWindowMap
    go (p,cur) pwm = pwm { winMap = update (p,cur) $ winMap pwm }
@@ -74,9 +95,11 @@ markWindow win = do
 
 unMarkWindow :: Window -> X ()
 unMarkWindow win = do
+  XConf { config = conf } <- ask
   p <- currentProfile
   cur <- gets $ W.tag . W.workspace . W.current . windowset
   XS.modify $ go (p,cur)
+  changeColor (focusedBorderColor conf) win
   where
    go :: (ProfileId, WorkspaceId) -> ProfileWindowMap -> ProfileWindowMap
    go (p,cur) pwm = pwm { winMap = update (p,cur) $ winMap pwm }

@@ -42,6 +42,7 @@ import XMonad.Hooks.StatusBar ( dynamicEasySBs )
 import XMonad.Actions.Prefix (usePrefixArgument)
 import XMonad.Util.Hacks (trayerAboveXmobarEventHook)
 import XMonad.Actions.Profiles
+import XMonad.Actions.ProfileWindows
 import qualified Workspaces.Profile as WP
 import XMonad.Util.UserConf (UserConf(userBorderWidth, userTerminal, userModMask, userTopics, userDefaultProfile))
 import XMonad.Util.PTL
@@ -68,6 +69,7 @@ baseConfig = setEwmhActivateHook activateHook
 
 hostConfig hostname = usePrefixArgument "M-f"
   . dynamicEasySBs ( pure . barSpawner hostname )
+  . addProfileWindows
   . addProfilesWithHistory def
                            { workspaceExcludes = [scratchpadWorkspaceTag]
                            , profiles          = WP.profiles myConf
