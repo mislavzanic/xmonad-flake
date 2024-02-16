@@ -61,22 +61,29 @@ userConf = def
     home :: [ProfileTopicLayout]
     home =
       [ mkPTL ["Dev", "Home", "Dots"] ["tiled"] $ inHome "web" (spawn myBrowser)
-      , mkPTL ["Dev"]                  ["hack"]  $ TI "dev" "~/.local/dev" $ spawnEditorInTopic topicConfig
-      , mkPTL ["Dev"]                  ["hack"]  $ TI "nix-dev" "~/.local/dev/nix-tinkering" (spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig)
-      , mkPTL ["Dev"]                  ["hack"]  $ TI "cp" "~/.local/dev/compprog" $ spawnEditorInTopic topicConfig
+      ] <> map (mkPTL ["Dev"] ["hack"])
+      [ inDev  "repos"                   $ spawnEditorInTopic topicConfig
+      , devDir "xmn-dev" "xmonad-dev"    $ spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig
+      , devDir "nix-dev" "nix-tinkering" $ spawnEditorInTopic topicConfig >> spawnTermInTopic topicConfig
+      , devDir "cp"      "compprog"      $ spawnEditorInTopic topicConfig
       ] <> map (mkPTL ["Home"] ["tiled"])
-      [ inHome "rss" (spawn $ myEditor <> " --eval '(elfeed)'")
-      , TI "blog" "~/.local/dev/blog/webContent" $ spawnEditorInTopic topicConfig
-      , TI "vid"  "~/.local/torrents" $ spawnTermInTopic topicConfig
-      , TI "pdf"  "~/.local/books" $ spawnTermInTopic topicConfig
+      [ inHome "rss"                      $ spawn $ myEditor <> " --eval '(elfeed)'"
+      , devDir "blog" "blog/webContent"   $ spawnEditorInTopic topicConfig
+      , TI     "vid"  "~/.local/torrents" $ spawnTermInTopic topicConfig
+      , TI     "pdf"  "~/.local/books"    $ spawnTermInTopic topicConfig
       ] <> map (mkPTL ["Dots"] ["hack"])
-      [ TI "dots"      "~/.config/.dotfiles"                   $ spawnEditorInTopic topicConfig 
-      , TI "xmn"       "~/.local/dev/dots/xmonad-flake/xmonad" $ spawnEditorInTopic topicConfig
-      , TI "emacs"     "~/.local/dev/dots/emacs-flake"         $ spawnEditorInTopic topicConfig
-      , TI "xmb"       "~/.local/dev/dots/xmonad-flake/xmobar" $ spawnEditorInTopic topicConfig
-      , TI "nix-mods"  "~/.local/dev/dots/nix-modules"         $ spawnEditorInTopic topicConfig
-      , TI "nix-utils" "~/.local/dev/dots/nix-utils"           $ spawnEditorInTopic topicConfig
+      [ TI      "dots"      "~/.config/.dotfiles" $ spawnEditorInTopic topicConfig
+      , dotsDir "xmn"       "xmonad-flake/xmonad" $ spawnEditorInTopic topicConfig
+      , dotsDir "xmb"       "xmonad-flake/xmobar" $ spawnEditorInTopic topicConfig
+      , dotsDir "emacs"     "emacs-flake"         $ spawnEditorInTopic topicConfig
+      , dotsDir "nix-mods"  "nix-modules"         $ spawnEditorInTopic topicConfig
+      , dotsDir "nix-utils" "nix-utils"           $ spawnEditorInTopic topicConfig
       ]
+
+    inDev n = TI n "~/.local/dev"
+    devDir n p = TI n $ "~/.local/dev/" <> p
+    dotsDir n p = devDir n $ "dots/" <> p
+
     
     notes :: [ProfileTopicLayout]
     notes = map (mkPTL ["Dev", "Home", "Dots"] ["tiled", "hack"])

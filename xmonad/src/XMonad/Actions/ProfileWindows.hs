@@ -5,7 +5,6 @@ module XMonad.Actions.ProfileWindows where
 import Data.Maybe
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
-import System.IO (hPutStrLn, stderr)
 
 import XMonad
 import qualified XMonad.StackSet as W
