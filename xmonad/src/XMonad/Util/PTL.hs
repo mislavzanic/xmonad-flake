@@ -46,7 +46,7 @@ bindProfileWSKeys = map (\p -> (map fst p, snd . head $ p))
     sortGroupBy f = groupBy (\x y -> f x == f y) . sortBy (\x y -> compare (f x) (f y))
 
 getProfiles :: [ProfileTopicLayout] -> [Profile]
-getProfiles ptls = (\p -> Profile p (getTopics p ptls) []) <$> ps
+getProfiles ptls = (\p -> Profile p (getTopics p ptls)) <$> ps
   where
     ps = Set.toList . Set.fromList $ foldl (\acc pi' -> acc <> pId pi') [] ptls
     getTopics pid ts = map (tiName . topicItem) $ filter ((pid `elem`) . pId) ts

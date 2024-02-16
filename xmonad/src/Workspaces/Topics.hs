@@ -5,11 +5,8 @@ module Workspaces.Topics
   , goto
   , toggleTopic
   , switchNthLastFocusedByScreen
-  , switchProfileTopicPrompt
-  , shiftProfileTopicPrompt
   )where
 
-import Control.Monad
 import Data.Maybe ( fromMaybe )
 
 import XMonad
@@ -54,22 +51,6 @@ instance XPrompt PfTopicPrompt where
       SwitchMode -> "Switch to Topic: "
       ShiftMode  -> "Send Window to Topic: "
   completionFunction (PfTopicPrompt c _ ns) = mkComplFunFromList' c ns
-
-switchProfileTopicPrompt :: TopicConfig -> XPConfig -> X ()
-switchProfileTopicPrompt tc c = mkPrompt =<< currentProfileWorkspaces
-  where
-    mkPrompt pws = mkXPrompt (PfTopicPrompt c SwitchMode pws) c (mkComplFunFromList' c pws) mbygoto 
-    mbygoto wid = do
-      pw <- profileWorkspaces =<< currentProfile
-      unless (wid `notElem` pw) (goto tc wid)
-
-shiftProfileTopicPrompt :: XPConfig -> X ()
-shiftProfileTopicPrompt c = mkPrompt =<< currentProfileWorkspaces
-  where
-    mkPrompt pws = mkXPrompt (PfTopicPrompt c ShiftMode pws) c (mkComplFunFromList' c pws) mbyshift
-    mbyshift wid = do
-      pw <- profileWorkspaces =<< currentProfile
-      unless (wid `notElem` pw) (windows . W.shift $ wid)
 
 defaultProfileTopic :: String -> String
 defaultProfileTopic "Work" = "brave"

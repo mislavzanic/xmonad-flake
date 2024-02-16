@@ -13,6 +13,11 @@ import Data.Foldable
 import XMonad.Util.UserConf (UserConf (userPromptConfig, userTopicConfig, userTopics))
 import XMonad.Util.PTL
 
+newtype ProfilePrompt = ProfilePrompt String
+
+instance XPrompt ProfilePrompt where
+  showXPrompt (ProfilePrompt x) = x
+
 profileKeys :: UserConf -> [(String, X())]
 profileKeys = topicKeys 
 
@@ -25,8 +30,8 @@ topicKeys conf =
               \case Raw _ -> spawnTermInTopic tc >> spawnEditorInTopic tc
                     _     -> currentTopicAction tc
     )
-  , ("M-g", switchProfileTopicPrompt tc promptTheme)
-  , ("M-S-g", shiftProfileTopicPrompt promptTheme)
+  , ("M-g", switchProfileWSPrompt promptTheme)
+  , ("M-S-g", shiftProfileWSPrompt promptTheme)
   , ("M1-<Tab>", toggleTopic tc)
 
   , ("M1-u", spawnEditorInTopic tc)

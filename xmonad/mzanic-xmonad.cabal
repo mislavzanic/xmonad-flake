@@ -21,7 +21,6 @@ library
                    Workspaces.Topics
                    Workspaces.Profile
                    Workspaces.Scratchpad
-                   XMonad.Actions.Profiles
                    XMonad.Actions.ProfileWindows
                    XMonad.Util.UserConf
                    XMonad.Util.DebugWindow
