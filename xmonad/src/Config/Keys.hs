@@ -27,7 +27,8 @@ import XMonad.Util.NamedScratchpad ( namedScratchpadAction, scratchpadWorkspaceT
 import XMonad.Layout.Spacing (toggleWindowSpacingEnabled, toggleScreenSpacingEnabled, decWindowSpacing, decScreenSpacing, incWindowSpacing, incScreenSpacing)
 import XMonad.Actions.Prefix (withPrefixArgument, PrefixArgument (Raw))
 import XMonad.Actions.ProfileWindows
-import XMonad.Actions.Minimize (minimizeWindow, withLastMinimized, maximizeWindowAndFocus)
+import XMonad.Actions.CycleWindows
+import XMonad.Actions.Sift
 import XMonad.Util.UserConf
 
 type Keybind = (String, X ())
@@ -37,11 +38,11 @@ windowsKeys =
   [ ("M-j",   windows W.focusDown)
   , ("M-k",   windows W.focusUp)
   , ("M-m",   windows W.focusMaster)
-  , ("M-S-j", windows W.swapDown)
-  , ("M-S-k", windows W.swapUp)
+  , ("M-S-j", windows siftDown)
+  , ("M-S-k", windows siftUp)
 
-  , ("M-C-j", onGroup W.focusDown')
-  , ("M-C-k", onGroup W.focusUp')
+  , ("M-C-j", rotFocusedDown)
+  , ("M-C-k", rotFocusedUp)
 
   , ("M-w",   nextScreen)
   , ("M-e",   prevScreen)
