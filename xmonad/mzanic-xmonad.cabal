@@ -4,7 +4,7 @@ version:            0.1.0.0
 
 library
   hs-source-dirs:  src
-  exposed-modules: Xmonad
+  exposed-modules: Exe
                    Config.Alias
                    Config.Bar
                    Config.Hosts

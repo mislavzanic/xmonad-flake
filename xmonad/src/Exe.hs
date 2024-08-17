@@ -8,7 +8,7 @@
 
 -}
 
-module Xmonad ( main ) where
+module Exe ( mzanicXmonad ) where
 
 
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
@@ -20,15 +20,11 @@ module Xmonad ( main ) where
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE BlockArguments #-}
 
--- import Workspaces.Topics ( topics, ProfileItem (topicItem) )
-
 import Prelude
 
 import XMonad
 import Config.Hosts
 
 
-main :: String -> IO ()
-main h = xmonad $ hostConfig h 
--- main :: String -> String -> IO ()
--- main h configDir = xmonad $ hostConfig h configDir
+mzanicXmonad :: String -> IO ()
+mzanicXmonad h = xmonad $ hostConfig h 

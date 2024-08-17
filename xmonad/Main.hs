@@ -1,12 +1,8 @@
 module Main where
 
-import qualified Xmonad
+import Exe ( mzanicXmonad )
 
 import Network.HostName ( getHostName )
-import System.Environment (getEnv)
 
 main :: IO ()
-main = do
-  hostname <- getHostName
-  -- configHome <- getEnv "XDG_CONFIG_HOME"
-  Xmonad.main hostname  -- configHome
+main = getHostName >>= mzanicXmonad

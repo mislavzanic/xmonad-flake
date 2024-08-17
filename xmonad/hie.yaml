@@ -9,7 +9,7 @@ cradle:
     - path: "xmonad/src"
       component: "lib:xmonad"
 
-    - path: "src/Xmonad.hs"
+    - path: "src/Exe.hs"
       component: "lib:mzanic-xmonad"
 
     - path: "src/Config"
