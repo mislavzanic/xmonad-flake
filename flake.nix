@@ -10,7 +10,7 @@
       url = "github:xmonad/xmonad-contrib";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    xmobar.url = "git+https://codeberg.org/xmobar/xmobar.git/?dir=nix";
+    xmobar.url = "git+https://codeberg.org/xmobar/xmobar/src/branch/master/nix";
   };
   outputs = inputs@{
     self,
