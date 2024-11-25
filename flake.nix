@@ -11,7 +11,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     xmobar = {
-      url = "git+https://codeberg.org/xmobar/xmobar";
+      url = "git+https://codeberg.org/xmobar/xmobar.git/?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.git-ignore-nix.follows = "git-ignore-nix";
     };
